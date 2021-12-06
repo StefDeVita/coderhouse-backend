@@ -14,6 +14,9 @@ const container = new Contenedor('productos.json')
 app.get('/productos',(req, res) => {
     res.send(container.getAll())
 })
+app.get('/',(req, res) => {
+    res.send("Hola!")
+})
 app.get('/productoRandom',(req, res) => {
     let products = container.getAll()
     res.send(products[Math.floor(Math.random()*products.length)])
