@@ -67,17 +67,17 @@ server.on("error",error => console.log(`Error en el servidor ${error}`));
 
 router.get('/productos',(req, res) => {
     res.send(productos.getAll());
+    
 })
 router.get('/productos/:id',(req, res) => {
     let id = req.params.id;
-    
     let producto = productos.get(id);
     res.send(producto);
 })
 router.post('/productos',(req,res) =>{
     let producto = req.body;
-    let id = productos.push(producto);
-    res.end(JSON.stringify(id))
+    let nuevoProducto = productos.push(producto);
+    res.send(nuevoProducto);
 })
 router.put('/productos/:id',(req, res) => {
     let id = req.params.id;
