@@ -1,17 +1,1 @@
-[{
-    "title" : "testTitle",
-    "price": 120,
-    "thumbnail": "test",
-    "id":1
-},{
-    "title" : "testTitle2",
-    "price": 1201,
-    "thumbnail":"test2",
-    "id":2
-},
-{
-    "title" : "testTitle3",
-    "price": 12321,
-    "thumbnail":"test3",
-    "id":3
-}]
+[{"title":"ca","price":"121212","thumbnail":"ca","id":0},{"title":"asa","price":"123","thumbnail":"cawraqw","id":0}]

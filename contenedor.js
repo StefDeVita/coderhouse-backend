@@ -53,9 +53,8 @@ class Contenedor{
         return this.content;
     }
     deleteById(id){
-        this.content = this.content.filter(e =>{  
-            return e.id !== id;
-        });
+        this.content = this.content.filter(e => e.id !== Number(id));
+        console.log(this.content);
         write(this.path,JSON.stringify(this.content)).catch(err =>{
             console.log("Error al escribir",err);
         })
@@ -69,11 +68,18 @@ class Contenedor{
             console.log(err)
         }
     }
-    getById(id){
-        let value = this.content.filter(e =>{
-            return e.id === id;
+    update(id,producto){
+        let productoACambiar = this.getById(id);
+        let productoNuevo = {...producto,id:productoACambiar.id};
+        this.deleteById(id);
+        this.content.push(productoNuevo);
+        write(this.path,JSON.stringify(this.content)).catch(err =>{
+            console.log("Error al escribir",err);
         })
-        if(value.length === 0){
+    }
+    getById(id){
+        let value =  this.content.find(e => e.id === Number(id))
+        if(!value){
             return null;
         }
         return value

@@ -2,56 +2,34 @@ const {Contenedor} = require('./contenedor.js')
 const express = require('express');
 const PORT = 8080;
 const {Router} = express;
-
+function isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
 const app = express();
 const router = Router();
 app.use(express.static('public'));
 app.use('/api',router)
 class ApiProductos{
     constructor(){
-        this.productos = [];
-        this.id = 0;
+        this.productos = new Contenedor(__dirname + '/productos.json');
     }
     getAll(){
-        return this.productos;
+        return this.productos.getAll();
     }
     push(producto){
-        const nuevoProducto = ({...producto,id:this.id});
-        this.productos.push(nuevoProducto);
-        this.id++;
-        return nuevoProducto;
+        let id = this.productos.save(producto);
+        return this.productos.getById(id);
     }
     update(id,producto){
-        let productoACambiar = {};
-        this.productos.forEach(p => {
-            if(id == p.id){
-                productoACambiar = p;
-            }
-        });
-        const nuevoProducto = {...producto,id:productoACambiar.id}
-        this.delete(productoACambiar.id);
-        this.productos.push(nuevoProducto)
-        return nuevoProducto;
+        this.productos.update(id,producto);
     }
     delete(id){
-        this.productos.forEach(p => {
-            if(id === p.id){
-                this.productos.splice(this.productos.indexOf(p),1)
-                return p;
-            }
-        });
+        let producto = this.productos.getById(id)
+        this.productos.deleteById(id);
+        return producto;
     }
     get(id){
-        let productoADevolver = {};
-        this.productos.forEach(producto => {
-            if(id == producto.id){
-                productoADevolver = producto;
-            }
-        });
-        if(productoADevolver === {}){
-            return {error:'No se encuentra el producto' }
-        }
-        return productoADevolver
+        return this.productos.getById(id)
     }
 }
 
@@ -72,10 +50,15 @@ router.get('/productos',(req, res) => {
 router.get('/productos/:id',(req, res) => {
     let id = req.params.id;
     let producto = productos.get(id);
+    console.log(producto)
     res.send(producto);
 })
 router.post('/productos',(req,res) =>{
     let producto = req.body;
+    if(!isNumeric(producto.price)){
+        res.send("Ingrese un precio válido")
+        return;
+    }
     let nuevoProducto = productos.push(producto);
     res.send(nuevoProducto);
 })
@@ -87,5 +70,9 @@ router.put('/productos/:id',(req, res) => {
 })
 router.delete('/productos/:id',(req, res) => {
     let id = req.params.id;
-    res.send(productos.delete(id))
+    if(!productos.get(id)){
+        res.send("No se encuentra el producto")
+    }
+    productos.delete(id)
+    res.send("Producto borrado exitosamente")
 })
