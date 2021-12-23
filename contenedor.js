@@ -54,7 +54,6 @@ class Contenedor{
     }
     deleteById(id){
         this.content = this.content.filter(e => e.id !== Number(id));
-        console.log(this.content);
         write(this.path,JSON.stringify(this.content)).catch(err =>{
             console.log("Error al escribir",err);
         })
@@ -70,12 +69,16 @@ class Contenedor{
     }
     update(id,producto){
         let productoACambiar = this.getById(id);
+        if(!productoACambiar){
+            return null;
+        }
         let productoNuevo = {...producto,id:productoACambiar.id};
         this.deleteById(id);
         this.content.push(productoNuevo);
         write(this.path,JSON.stringify(this.content)).catch(err =>{
             console.log("Error al escribir",err);
         })
+        return productoNuevo;
     }
     getById(id){
         let value =  this.content.find(e => e.id === Number(id))

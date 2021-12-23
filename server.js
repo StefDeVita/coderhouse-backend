@@ -21,7 +21,7 @@ class ApiProductos{
         return this.productos.getById(id);
     }
     update(id,producto){
-        this.productos.update(id,producto);
+        return this.productos.update(id,producto);
     }
     delete(id){
         let producto = this.productos.getById(id)
@@ -50,29 +50,41 @@ router.get('/productos',(req, res) => {
 router.get('/productos/:id',(req, res) => {
     let id = req.params.id;
     let producto = productos.get(id);
-    console.log(producto)
+    if(!producto){
+        res.send({"error":"No se encuentra el producto"})
+        return;
+    }
     res.send(producto);
 })
 router.post('/productos',(req,res) =>{
     let producto = req.body;
     if(!isNumeric(producto.price)){
-        res.send("Ingrese un precio válido")
+        res.send({"error":"Ingrese un precio valido"})
         return;
     }
+    producto.price = Number(producto.price);
     let nuevoProducto = productos.push(producto);
     res.send(nuevoProducto);
 })
 router.put('/productos/:id',(req, res) => {
     let id = req.params.id;
     let producto = req.body;
+    if(!isNumeric(producto.price)){
+        res.send({"error":"Ingrese un precio valido"})
+        return;
+    }
+    producto.price = Number(producto.price);
     let nuevoProducto = productos.update(id,producto)
+    if(!nuevoProducto){
+        res.send({"error":"No se encuentra el producto"})
+    }
     res.send(nuevoProducto);
 })
 router.delete('/productos/:id',(req, res) => {
     let id = req.params.id;
     if(!productos.get(id)){
-        res.send("No se encuentra el producto")
+        res.send({"error":"No se encuentra el producto"})
     }
-    productos.delete(id)
-    res.send("Producto borrado exitosamente")
+    let productoBorrado = productos.delete(id);
+    res.send(productoBorrado);
 })
