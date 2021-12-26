@@ -9,6 +9,8 @@ const app = express();
 const router = Router();
 app.use(express.static('public'));
 app.use('/api',router)
+app.set('view engine', 'pug');
+app.set('views','./views')
 class ApiProductos{
     constructor(){
         this.productos = new Contenedor(__dirname + '/productos.json');
@@ -33,58 +35,26 @@ class ApiProductos{
     }
 }
 
-const productos = new ApiProductos();
+const productsApi = new ApiProductos();
 router.use(express.json())
 router.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 
 const server = app.listen(PORT,() => {
     console.log(`Servidor escuchando en el puerto ${server.address().port}   `)
 });
 
 server.on("error",error => console.log(`Error en el servidor ${error}`));
-
-router.get('/productos',(req, res) => {
-    res.send(productos.getAll());
+app.post('/productos',(req, res)=>{
+    console.log(req.body);
+    productsApi.push(req.body);
     
+    res.redirect('/')
+});
+app.get('/',(req,res)=>{
+    res.render('form');
 })
-router.get('/productos/:id',(req, res) => {
-    let id = req.params.id;
-    let producto = productos.get(id);
-    if(!producto){
-        res.send({"error":"No se encuentra el producto"})
-        return;
-    }
-    res.send(producto);
-})
-router.post('/productos',(req,res) =>{
-    let producto = req.body;
-    if(!isNumeric(producto.price)){
-        res.send({"error":"Ingrese un precio valido"})
-        return;
-    }
-    producto.price = Number(producto.price);
-    let nuevoProducto = productos.push(producto);
-    res.send(nuevoProducto);
-})
-router.put('/productos/:id',(req, res) => {
-    let id = req.params.id;
-    let producto = req.body;
-    if(!isNumeric(producto.price)){
-        res.send({"error":"Ingrese un precio valido"})
-        return;
-    }
-    producto.price = Number(producto.price);
-    let nuevoProducto = productos.update(id,producto)
-    if(!nuevoProducto){
-        res.send({"error":"No se encuentra el producto"})
-    }
-    res.send(nuevoProducto);
-})
-router.delete('/productos/:id',(req, res) => {
-    let id = req.params.id;
-    if(!productos.get(id)){
-        res.send({"error":"No se encuentra el producto"})
-    }
-    let productoBorrado = productos.delete(id);
-    res.send(productoBorrado);
+app.get('/productos',(req,res)=>{
+    let products = productsApi.getAll()
+    res.render('table',{products});
 })

@@ -35,16 +35,26 @@ class ApiProductos{
     }
 }
 
-const productos = new ApiProductos();
+const productsApi = new ApiProductos();
 router.use(express.json())
 router.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 
 const server = app.listen(PORT,() => {
     console.log(`Servidor escuchando en el puerto ${server.address().port}   `)
 });
 
 server.on("error",error => console.log(`Error en el servidor ${error}`));
-app.post('/productos')
+app.post('/productos',(req, res)=>{
+    console.log(req.body);
+    productsApi.push(req.body);
+    
+    res.redirect('/')
+});
 app.get('/',(req,res)=>{
-    res.render('form',productos.getAll());
+    res.render('form');
+})
+app.get('/productos',(req,res)=>{
+    let products = productsApi.getAll()
+    res.render('products',{products});
 })

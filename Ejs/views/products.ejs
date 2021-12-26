@@ -7,9 +7,9 @@
                 <tr> <th>Nombre</th> <th>Precio</th> <th>Imagen</th> </tr>
                 <%products.forEach(function(product) {%>
                 <tr>
-                    <td><%=product.name%></td>
+                    <td><%=product.title%></td>
                     <td><%=product.price%></td>
-                    <img class="img-responsive" src="<%=product.thumbnail%>" alt="<%=product.name%>">
+                    <td><img class="img-responsive" src="<%=product.thumbnail%>" alt="<%=product.name%>"></td>
                 </tr>
                 <%});%>
             </table>
