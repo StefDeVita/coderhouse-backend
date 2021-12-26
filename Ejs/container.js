@@ -20,7 +20,7 @@ const write = async (path,value) =>{
     }
 }
 
-class Contenedor{
+class Container{
     constructor(path){
         this.path = path;
         this.id = 0;
@@ -67,18 +67,18 @@ class Contenedor{
             console.log(err)
         }
     }
-    update(id,producto){
-        let productoACambiar = this.getById(id);
-        if(!productoACambiar){
+    update(id,product){
+        let oldProduct = this.getById(id);
+        if(!oldProduct){
             return null;
         }
-        let productoNuevo = {...producto,id:productoACambiar.id};
+        let newProduct = {...product,id:oldProduct.id};
         this.deleteById(id);
-        this.content.push(productoNuevo);
+        this.content.push(newProduct);
         write(this.path,JSON.stringify(this.content)).catch(err =>{
             console.log("Error al escribir",err);
         })
-        return productoNuevo;
+        return newProduct;
     }
     getById(id){
         let value =  this.content.find(e => e.id === Number(id))
@@ -88,6 +88,6 @@ class Contenedor{
         return value
     }
 }
-module.exports = {Contenedor}
+module.exports = {Container}
 
 

@@ -1,4 +1,4 @@
-const {Contenedor} = require('./contenedor.js')
+const {Container} = require('./container.js')
 const express = require('express');
 const PORT = 8080;
 const {Router} = express;
@@ -14,31 +14,31 @@ app.engine('handlebars',handlebars.engine())
 app.use('/api',router)
 app.set('view engine', 'handlebars');
 app.set('views',__dirname + '/views')
-class ApiProductos{
+class ProductsApi{
     constructor(){
-        this.productos = new Contenedor(__dirname + '/productos.json');
+        this.products = new Container(__dirname + '/products.json');
     }
     getAll(){
-        return this.productos.getAll();
+        return this.products.getAll();
     }
     push(producto){
-        let id = this.productos.save(producto);
-        return this.productos.getById(id);
+        let id = this.products.save(producto);
+        return this.products.getById(id);
     }
     update(id,producto){
-        return this.productos.update(id,producto);
+        return this.products.update(id,producto);
     }
     delete(id){
-        let producto = this.productos.getById(id)
-        this.productos.deleteById(id);
-        return producto;
+        let product = this.products.getById(id)
+        this.products.deleteById(id);
+        return product;
     }
     get(id){
-        return this.productos.getById(id)
+        return this.products.getById(id)
     }
 }
 
-const productsApi = new ApiProductos();
+const productsApi = new ProductsApi();
 router.use(express.json())
 router.use(express.urlencoded({ extended: true }))
 app.use(express.urlencoded({ extended: true }));
@@ -48,8 +48,12 @@ const server = app.listen(PORT,() => {
 });
 
 server.on("error",error => console.log(`Error en el servidor ${error}`));
-app.post('/productos',(req, res)=>{
-    console.log(req.body);
+app.post('/products',(req, res)=>{
+    newProduct = req.body;
+    if(newProduct.title === "" || newProduct.thumbnail === "" || !isNumeric(newProduct.price)){
+        res.render('error',{layout:'index'});
+        return;
+    }
     productsApi.push(req.body);
     
     res.redirect('/')
@@ -57,7 +61,7 @@ app.post('/productos',(req, res)=>{
 app.get('/',(req,res)=>{
     res.render('main',{layout:'index'});
 })
-app.get('/productos',(req,res)=>{
+app.get('/products',(req,res)=>{
     let products = productsApi.getAll()
     res.render('table',{products:products,layout:'index'});
 })

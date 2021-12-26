@@ -2,7 +2,15 @@
 Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
 
 ## Correr el proyecto
-  El proyecto se inicializa corriendo el siguiente script:
+  Antes de inicializar el proyecto habra que moverse al directorio correspondiente al motor de plantillas deseado ya sea con el explorador de archivos o un comando de tipo
+  ```
+  cd handlebars
+  ```
+  Luego de esto habra que instalar las dependencias de ese proyecto con el comando
+  ```
+  npm install
+  ```
+  Por último el proyecto se inicializa corriendo el siguiente script:
   ```
   npm start
   ```

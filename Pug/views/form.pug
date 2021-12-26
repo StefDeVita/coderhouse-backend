@@ -8,7 +8,7 @@ head
 body
     .container.mt-3
       h1.header.mt-3 Ingrese Datos
-      form(action='/productos' method='post')
+      form(action='/products' method='post')
         .form-group
           label(for='title')
             b Nombre
@@ -22,6 +22,6 @@ body
             b Imagen
           input#image.form-control(type='text' name='thumbnail')
         button.btn.btn-primary.mt-3.mb-5 Enviar
-      a.btn.btn-primary.mt-3(href='/productos')
+      a.btn.btn-primary.mt-3(href='/products')
         p(style='color: white;') Ver productos
 
