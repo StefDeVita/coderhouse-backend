@@ -1,0 +1,3 @@
+Si tuviera que elegir uno de los 3 motores me quedaría con EJS, fue el que menos me costo
+aprender a usar ya que es muy parecido a HTML básico a diferencia de pug y ademas es muy fácil introducirle código
+y no hay mayores complicaciones con el sistema de archivos como si me paso en handlebars
