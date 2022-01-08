@@ -52,7 +52,6 @@ app.post('/products',(req, res)=>{
         return
     }
     productsApi.push(req.body);
-    
     res.redirect('/')
 });
 app.get('/',(req,res)=>{
