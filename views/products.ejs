@@ -1,0 +1,34 @@
+    <script>
+        const render = (products) => {
+            if(products.length === 0){
+                document.getElementById('table-container').innerHTML = `<h3 class="alert alert-danger">no se encontraron productos</h3>`; 
+                return;
+            }
+            document.getElementById('table-container').innerHTML = `<table id="table" class="table table-dark">
+                <tr><th>Nombre</th> <th>Precio</th> <th>Imagen</th> </tr>`; 
+
+            let html = products.map(function(product, index){ 
+            return(`<tr>
+            <td>${product.title}</td>
+            <td>${product.price}</td> 
+            <td><img class="img-responsive" src="${product.thumbnail}" alt="${product.title}"></td>
+            </tr>`) 
+            }).join(""); 
+            document.getElementById('table').innerHTML += html;
+            
+        }
+        socket.on('error',()=>{
+            document.getElementById('error-container').innerHTML = '<h2 class="title">Error en el formato del producto, no deje ningun campo en blanco e ingrese un valor númerico al precio</h2>';
+        })
+        socket.on('products',data =>{
+            render(data);
+            document.getElementById('error-container').innerHTML = "";
+
+        })
+    </script>
+        <div id="error-container" class="table-responsive">
+        </div>
+        <div id="table-container" class="table-responsive">
+        </div>
+   
+    
