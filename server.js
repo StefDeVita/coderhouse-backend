@@ -15,8 +15,8 @@ app.use('/api',router)
 app.set('view engine', 'ejs');
 app.set('views','./views')
 class ProductsApi{
-    constructor(){
-        this.products = new Container(__dirname + '/products.json');
+    constructor(path){
+        this.products = new Container(__dirname + path);
     }
     getAll(){
         return this.products.getAll();
@@ -37,8 +37,21 @@ class ProductsApi{
         return this.products.getById(id)
     }
 }
-
-const productsApi = new ProductsApi();
+const validateEmail = (inputText) =>{
+    var mailFormat = /\S+@\S+\.\S+/;
+    if(inputText.match(mailFormat))
+    {
+        console.log("hola")
+        return true;
+    }
+    else
+    {
+        console.log(inputText)
+        return false;
+    }
+}
+const productsApi = new ProductsApi('/products.json');
+const messagesApi = new ProductsApi('/messages.json');
 router.use(express.json())
 router.use(express.urlencoded({ extended: true }))
 app.use(express.urlencoded({ extended: true }));
@@ -64,6 +77,7 @@ io.on('connection', (socket) => {
     console.log('Un cliente se ha conectado');
     let products = productsApi.getAll();
     socket.emit('products',products)
+    socket.emit('messages',messagesApi.getAll())
     socket.on('product',data =>{
         if(data.title === "" || data.thumbnail === "" || !isNumeric(data.price)){
             io.sockets.emit('error');
@@ -72,6 +86,15 @@ io.on('connection', (socket) => {
         productsApi.push(data);
         io.sockets.emit('products',products)
     } )
+    socket.on('new-message',data => {
+        if(data.message === "" || !validateEmail(data.author)){
+            io.sockets.emit('mailError');
+            return
+        }
+        messagesApi.push(data);
+        io.sockets.emit('messages', messagesApi.getAll());
+    });
+
 });
 
 app.get('/products',(req,res)=>{

@@ -2,37 +2,35 @@
 Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
 
 ## Correr el proyecto
-  Antes de inicializar el proyecto habra que moverse al directorio correspondiente al motor de plantillas deseado ya sea con el explorador de archivos o un comando de tipo
-  ```
-  cd handlebars
-  ```
-  Luego de esto habra que instalar las dependencias de ese proyecto con el comando
+
+  Para poder inicializar el proyecto habra que instalar las dependencias de este con el comando
   ```
   npm install
   ```
   Por último el proyecto se inicializa corriendo el siguiente script:
   ```
-  npm start
-  ```
-## Peticiones al server
-
-  En esta rama se pueden hacer las siguientes peticiones
-  ```
-  GET '/productos' -> devuelve todos los productos.
-  POST '/productos' -> recibe y agrega un producto, y lo devuelve con su id asignado.
-  
-
+  npm run start
   ```
 ## Muestra de objetos
-  Los objetos agregados se muestran en una tabla a la cual se puede acceder desde la pagina principal mediante un boton
+  Los objetos agregados se muestran en una tabla en la página principal que se actualiza en vivo sin necesidad de recargar la misma para todos los clientes.
+  Por otro lado los mensajes se muestran debajo de esta tabla de la misma forma. La página cuenta con dos formularios, uno para cada funcionalidad.
 ## Formato de objetos
-  Los objetos aceptados cuentan con el siguiente formato:
+  Los objetos (productos) aceptados cuentan con el siguiente formato:
   
   ```
   {
     title: (nombre del producto),
     price: (precio),
     thumbnail: (url al logo o foto del producto)
+  }
+
+  ```
+  Por otro lado los mensajes aceptados cuentan con el siguiente formato
+  ```
+  {
+    author: (email del autor),
+    text: (texto del mensaje),
+    date: (fecha del mensaje formateada para mostrarse en la página)
   }
 
   ```
