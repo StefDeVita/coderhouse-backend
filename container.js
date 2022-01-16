@@ -20,7 +20,7 @@ const write = async (path,value) =>{
     }
 }
 
-class Contenedor{
+class Container{
     constructor(path){
         this.path = path;
         this.id = 0;
@@ -28,12 +28,13 @@ class Contenedor{
         try{
             read(this.path).then(res =>{
                 this.content = JSON.parse(res)
+                this.content.forEach(element => {
+                    if(element.id >= this.id){
+                        this.id = element.id + 1;
+                    }
+                });
             })
-            this.content.forEach(element => {
-                if(element.id >= this.id){
-                    this.id = element.id + 1;
-                }
-            });
+            
         }catch(err){
             console.log(err)
             (async() => await write(this.path,"[]"))();
@@ -42,6 +43,7 @@ class Contenedor{
     
     save(object){
         object.id = this.id;
+        object.timestamp = Date.now();
         this.content.push(object)
         this.id++;
         write(this.path,JSON.stringify(this.content)).catch(err=>{
@@ -67,18 +69,18 @@ class Contenedor{
             console.log(err)
         }
     }
-    update(id,producto){
-        let productoACambiar = this.getById(id);
-        if(!productoACambiar){
+    update(id,product){
+        let changingProduct = this.getById(id);
+        if(!changingProduct){
             return null;
         }
-        let productoNuevo = {...producto,id:productoACambiar.id};
+        let newProduct = {...product,id:changingProduct.id};
         this.deleteById(id);
-        this.content.push(productoNuevo);
+        this.content.push(newProduct);
         write(this.path,JSON.stringify(this.content)).catch(err =>{
             console.log("Error al escribir",err);
         })
-        return productoNuevo;
+        return newProduct;
     }
     getById(id){
         let value =  this.content.find(e => e.id === Number(id))
@@ -88,6 +90,6 @@ class Contenedor{
         return value
     }
 }
-module.exports = {Contenedor}
+module.exports = {Container}
 
 
