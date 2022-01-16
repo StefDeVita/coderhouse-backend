@@ -2,9 +2,13 @@
 Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
 
 ## Correr el proyecto
-  El proyecto se inicializa corriendo el siguiente script:
+  Primero se deben instalar todas las dependencias con el comando
   ```
-  npm start
+  npm install
+  ```
+  Luego el proyecto se inicializa corriendo el siguiente script:
+  ```
+  npm run start
   ```
 ## Peticiones al server
 
