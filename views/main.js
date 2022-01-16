@@ -1,17 +1,18 @@
 const socket = io.connect();
+
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 const validarEntrada = () => {
     let precio = document.getElementById("price").value;
-    if(!isNumeric(precio)){
+    if (!isNumeric(precio)) {
         document.getElementById("send").disabled = true;
-    }
-    else{
+    } else {
         document.getElementById("send").disabled = false;
     }
 }
+
 function addMessage(e) {
     let date = new Date();
     let formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
@@ -25,59 +26,59 @@ function addMessage(e) {
     return false;
 }
 const render = (products) => {
-    if(products.length === 0){
-        document.getElementById('table-container').innerHTML = `<h3 class="alert alert-danger">no se encontraron productos</h3>`; 
+    if (products.length === 0) {
+        document.getElementById('table-container').innerHTML = `<h3 class="alert alert-danger">no se encontraron productos</h3>`;
         return;
     }
     document.getElementById('table-container').innerHTML = `<table id="table" class="table table-dark">
-        <tr><th>Nombre</th> <th>Precio</th> <th>Imagen</th> </tr>`; 
+        <tr><th>Nombre</th> <th>Precio</th> <th>Imagen</th> </tr>`;
 
-    let html = products.map(function(product, index){ 
-    return(`<tr>
+    let html = products.map(function (product, index) {
+        return (`<tr>
     <td>${product.title}</td>
     <td>${product.price}</td> 
     <td><img class="img-responsive" src="${product.thumbnail}" alt="${product.title}"></td>
-    </tr>`) 
-    }).join(""); 
+    </tr>`)
+    }).join("");
     document.getElementById('table').innerHTML += html;
-    
+
 }
-const messageRender = (messages) =>{
-    if(messages.length === 0){
-        document.getElementById('message-container').innerHTML = `<h3 class="alert alert-danger">no se encontraron mensajes</h3>`; 
+const messageRender = (messages) => {
+    if (messages.length === 0) {
+        document.getElementById('message-container').innerHTML = `<h3 class="alert alert-danger">no se encontraron mensajes</h3>`;
         return;
     }
-    let html = messages.map(function(message, index){ 
-        return(`<div class="flex">
+    let html = messages.map(function (message, index) {
+        return (`<div class="flex">
             <div class="d-flex"><p class="author">${message.author}</p><p class="date">[${message.date}]:</p><p class="message"> ${message.text}</p></div>
-        </div>`) 
-        }).join(""); 
+        </div>`)
+    }).join("");
     document.getElementById('message-container').innerHTML = html;
 }
-socket.on('error',()=>{
+socket.on('error', () => {
     document.getElementById('error-container').innerHTML = '<h2 class="title">Error en el formato del producto, no deje ningun campo en blanco e ingrese un valor númerico al precio</h2>';
 })
-socket.on('mailError',()=>{
+socket.on('mailError', () => {
     document.getElementById('mailError-container').innerHTML = '<h2 class="title">Error en el formato del mensaje, no deje ningun campo en blanco e ingrese un valor válido en el campo de email</h2>';
 })
-socket.on('messages',data =>{
+socket.on('messages', data => {
     messageRender(data);
     document.getElementById('mailError-container').innerHTML = "";
-    document.getElementById('message-text').value ="";
+    document.getElementById('message-text').value = "";
     document.getElementById('message-text').focus();
 })
-socket.on('products',data =>{
+socket.on('products', data => {
     render(data);
     document.getElementById('error-container').innerHTML = "";
 
 })
-const addProduct = (e) =>{
+const addProduct = (e) => {
     const product = {
         title: document.getElementById("title").value,
         price: document.getElementById("price").value,
         thumbnail: document.getElementById("image").value
     };
-    socket.emit('product',product);
+    socket.emit('product', product);
     document.getElementById("title").value = '';
     document.getElementById("price").value = '';
     document.getElementById("image").value = '';

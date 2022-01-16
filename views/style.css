@@ -1,11 +1,13 @@
-.message{
+.message {
     color: green;
     font-style: italic;
 }
-.date{
+
+.date {
     color: brown;
 }
-.author{
+
+.author {
     color: blue;
     font-weight: bold;
 }
