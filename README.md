@@ -34,4 +34,6 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
   }
 
   ```
-  
+## Guardado de los datos
+
+Los datos (tanto los productos como los mensajes) son guardados en dos bases de datos una de MariaDB y otra de SQLite3, para poder guardar de manera local los datos en la base de MariaDB se debe inicializar MySQL en XAMPP o similares y darle los permisos requeridos. La base de SQLite se guardara en un archivo en el directorio db/messages.sqlite.

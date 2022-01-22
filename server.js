@@ -1,4 +1,8 @@
 const {Container} = require('./container.js')
+const {knexMariaDB} = require('./options/mariaDB.js');
+const {knexSQLite} = require('./options/SQLite3.js');
+const {createTables} = require('./createTable.js');
+createTables();
 const express = require('express');
 const PORT = 8080;
 const ejs = require('ejs');
@@ -15,15 +19,14 @@ app.use('/api',router)
 app.set('view engine', 'ejs');
 app.set('views','./views')
 class ProductsApi{
-    constructor(path){
-        this.products = new Container(__dirname + path);
+    constructor(db,tableName){
+        this.products = new Container(db,tableName);
     }
     getAll(){
         return this.products.getAll();
     }
     push(producto){
-        let id = this.products.save(producto);
-        return this.products.getById(id);
+        this.products.save(producto);
     }
     update(id,producto){
         return this.products.update(id,producto);
@@ -41,7 +44,6 @@ const validateEmail = (inputText) =>{
     var mailFormat = /\S+@\S+\.\S+/;
     if(inputText.match(mailFormat))
     {
-        console.log("hola")
         return true;
     }
     else
@@ -50,8 +52,8 @@ const validateEmail = (inputText) =>{
         return false;
     }
 }
-const productsApi = new ProductsApi('/products.json');
-const messagesApi = new ProductsApi('/messages.json');
+const productsApi = new ProductsApi(knexMariaDB,'products');
+const messagesApi = new ProductsApi(knexSQLite,'messages');
 router.use(express.json())
 router.use(express.urlencoded({ extended: true }))
 app.use(express.urlencoded({ extended: true }));
@@ -75,26 +77,33 @@ app.get('/',(req,res)=>{
 })
 io.on('connection', (socket) => {
     console.log('Un cliente se ha conectado');
-    let products = productsApi.getAll();
+    (async () =>{
+    
+    let products = await productsApi.getAll();
     socket.emit('products',products)
-    socket.emit('messages',messagesApi.getAll())
+    socket.emit('messages',await messagesApi.getAll())
     socket.on('product',data =>{
         if(data.title === "" || data.thumbnail === "" || !isNumeric(data.price)){
             io.sockets.emit('error');
             return
         }
+        data.price = Number(data.price);
         productsApi.push(data);
-        io.sockets.emit('products',products)
-    } )
+        productsApi.getAll().then(products =>{
+            io.sockets.emit('products',products)
+        }
+        )}) 
     socket.on('new-message',data => {
         if(data.message === "" || !validateEmail(data.author)){
             io.sockets.emit('mailError');
             return
         }
         messagesApi.push(data);
-        io.sockets.emit('messages', messagesApi.getAll());
+        messagesApi.getAll().then(messages=>{
+            io.sockets.emit('messages', messages)
+        })
     });
-
+    })()
 });
 
 app.get('/products',(req,res)=>{

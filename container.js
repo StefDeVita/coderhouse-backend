@@ -1,91 +1,30 @@
-const fs = require('fs');
-
-
-const read = async (path) => {
-    try {
-        const content = await fs.promises.readFile(path, "utf-8");
-        return content
-    } catch (err) {
-        throw new Error(err, "Error de lectura");
-    }
-}
-const write = async (path, value) => {
-    try {
-        const content = await fs.promises.writeFile(path, value);
-        return content
-    } catch (err) {
-        console.log("Error de escritura", err)
-    }
-}
 
 class Container {
-    constructor(path) {
-        this.path = path;
-        this.id = 0;
-        this.content = [];
-        try {
-            read(this.path).then(res => {
-                this.content = JSON.parse(res)
-            })
-            this.content.forEach(element => {
-                if (element.id >= this.id) {
-                    this.id = element.id + 1;
-                }
-            });
-        } catch (err) {
-            console.log(err)
-                (async () => await write(this.path, "[]"))();
-        }
+    constructor(knex,tableName) {
+        this.knex = knex;
+        this.tableName = tableName;
     }
 
     save(object) {
-        object.id = this.id;
-        this.content.push(object)
-        this.id++;
-        write(this.path, JSON.stringify(this.content)).catch(err => {
-            console.log("Error al escribir", err)
-        })
-        return this.id - 1;
+        this.knex(this.tableName).insert(object).then()
     }
     getAll() {
-        return this.content;
+        return this.knex.select().table(this.tableName).then()
     }
     deleteById(id) {
-        this.content = this.content.filter(e => e.id !== Number(id));
-        write(this.path, JSON.stringify(this.content)).catch(err => {
-            console.log("Error al escribir", err);
-        })
+        this.knex(this.tableName)
+        .where({id:id}).del();   
     }
     deleteAll() {
-        this.content = [];
-        try {
-            async () => await write(this.path, "[]");
-        } catch (err) {
-            console.log(err)
-        }
+        this.knex(this.tableName).del()
+        .where('id', '!=', 'null')
     }
     update(id, product) {
-        let oldProduct = this.getById(id);
-        if (!oldProduct) {
-            return null;
-        }
-        let newProduct = {
-            ...product,
-            id: oldProduct.id
-        };
-        this.deleteById(id);
-        this.content.push(newProduct);
-        write(this.path, JSON.stringify(this.content)).catch(err => {
-            console.log("Error al escribir", err);
-        })
-        return newProduct;
+        this.knex(this.tableName).where({id:id})
+        .update(product)
     }
     getById(id) {
-        let value = this.content.find(e => e.id === Number(id))
-        if (!value) {
-            return null;
-        }
-        return value
+        return this.knex(this.tableName).where({id:id})
     }
 }
 module.exports = {
