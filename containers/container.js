@@ -23,14 +23,14 @@ const write = async (path,value) =>{
 class Container{
     constructor(path){
         this.path = path;
-        this.id = 0;
+        this._id = 0;
         this.content = [];
         try{
             read(this.path).then(res =>{
                 this.content = JSON.parse(res)
                 this.content.forEach(element => {
-                    if(element.id >= this.id){
-                        this.id = element.id + 1;
+                    if(element._id >= this._id){
+                        this._id = element._id + 1;
                     }
                 });
             })
@@ -42,20 +42,20 @@ class Container{
     }
     
     save(object){
-        object.id = this.id;
+        object._id = this._id;
         object.timestamp = Date.now();
         this.content.push(object)
-        this.id++;
+        this._id++;
         write(this.path,JSON.stringify(this.content)).catch(err=>{
             console.log("Error al escribir",err)
         })
-        return this.id - 1;
+        return this._id - 1;
     }
     getAll(){
         return this.content;
     }
-    deleteById(id){
-        this.content = this.content.filter(e => e.id !== Number(id));
+    deleteByid(_id){
+        this.content = this.content.filter(e => e._id !== Number(_id));
         write(this.path,JSON.stringify(this.content)).catch(err =>{
             console.log("Error al escribir",err);
         })
@@ -69,21 +69,21 @@ class Container{
             console.log(err)
         }
     }
-    update(id,product){
-        let changingProduct = this.getById(id);
+    update(_id,product){
+        let changingProduct = this.getBy_id(_id);
         if(!changingProduct){
             return null;
         }
-        let newProduct = {...product,id:changingProduct.id};
-        this.deleteById(id);
+        let newProduct = {...product,_id:changingProduct._id};
+        this.deleteBy_id(_id);
         this.content.push(newProduct);
         write(this.path,JSON.stringify(this.content)).catch(err =>{
             console.log("Error al escribir",err);
         })
         return newProduct;
     }
-    getById(id){
-        let value =  this.content.find(e => e.id === Number(id))
+    getByid(_id){
+        let value =  this.content.find(e => e._id === Number(_id))
         if(!value){
             return null;
         }

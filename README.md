@@ -46,4 +46,14 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
 
   ```
   Ademas se le agregara un ID y un timestamp a cada producto asi como a cada carrito al crearse.
-  
+
+  El formato de los carritos es
+  ```
+  {
+    products: [Arreglo con los productos agregados],
+    _id: (id del carrito),
+    timestamp: (timestamp del carrito),
+  }
+
+  ```
+  Estos se crearar y se devolveran con el arreglo vacio ademas de su id y timestamp correspondiente

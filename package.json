@@ -4,12 +4,14 @@
   "description": "",
   "main": "contenedor.js",
   "scripts": {
-    "start" : "node server.js",
+    "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "dotenv": "^16.0.0",
+    "express": "^4.17.1",
+    "mongoose": "^6.2.0"
   }
 }

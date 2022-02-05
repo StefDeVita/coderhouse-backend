@@ -1,4 +1,8 @@
-const {Container} = require('./container.js')
+const {Container} = require('./containers/container.js')
+require('dotenv').config()
+const {MongoContainer} = require('./containers/mongoContainer')
+const Carts = require('./models/carts')
+const Products = require('./models/products')
 const express = require('express');
 const PORT = process.env.PORT || 8080;
 let admin = true;
@@ -12,33 +16,32 @@ const cartRouter = new Router()
 app.use(express.static('public'));
 app.use('/api',router);
 app.use('/cart',cartRouter);
-
 class ProductsApi{
-    constructor(path){
-        this.products = new Container(__dirname + path);
+    constructor(model){
+        this.products = new MongoContainer(process.env.MONGO_URI,model);
     }
-    getAll(){
+    async getAll(){
         return this.products.getAll();
     }
-    push(product){
-        let id = this.products.save(product);
-        return this.products.getById(id);
+    async push(product){
+        let id = await this.products.save(product);
+        return await this.products.getById(id);
     }
-    update(id,product){
+    async update(id,product){
         return this.products.update(id,product);
     }
-    delete(id){
-        let product = this.products.getById(id)
+    async delete(id){
+        let product = await this.products.getById(id)
         this.products.deleteById(id);
         return product;
     }
-    get(id){
+    async get(id){
         return this.products.getById(id)
     }
 }
 
-const products = new ProductsApi('/products.json');
-const carts = new ProductsApi('/carts.json');
+const products = new ProductsApi(Products);
+const carts = new ProductsApi(Carts);
 cartRouter.use(express.json());
 cartRouter.use(express.urlencoded({ extended: true}));
 router.use(express.json());
@@ -50,20 +53,21 @@ const server = app.listen(PORT,() => {
 
 server.on("error",error => console.log(`Error en el servidor ${error}`));
 
-router.get('/products',(req, res) => {
-    res.send(products.getAll());
+router.get('/products',async (req, res) => {
+    let savedProducts = await products.getAll()
+    res.send(savedProducts);
     
 })
-router.get('/products/:id',(req, res) => {
+router.get('/products/:id',async (req, res) => {
     let id = req.params.id;
-    let product = products.get(id);
+    let product = await products.get(id);
     if(!product){
         res.send({"error":"No se encuentra el producto"})
         return;
     }
     res.send(product);
 })
-router.post('/products',(req,res) =>{
+router.post('/products',async (req,res) =>{
     if(!admin){
         res.send({ error : -1, description: "ruta 'products' método 'post' no autorizado" });
         return
@@ -75,10 +79,10 @@ router.post('/products',(req,res) =>{
     }
     product.price = Number(product.price);
     product.stock = Number(product.stock);
-    let newProduct = products.push(product);
+    let newProduct = await products.push(product);
     res.send(newProduct);
 })
-router.put('/products/:id',(req, res) => {
+router.put('/products/:id',async (req, res) => {
     if(!admin){
         res.send({ error : -1, description: "ruta 'products' método 'put' no autorizado" });
         return
@@ -91,48 +95,49 @@ router.put('/products/:id',(req, res) => {
     }
     product.price = Number(product.price);
     product.stock = Number(product.stock);
-    let newProduct = products.update(id,product)
+    let newProduct = await products.update(id,product)
     if(!newProduct){
         res.send({"error":"No se encuentra el producto"})
     }
     res.send(newProduct);
 })
-router.delete('/products/:id',(req, res) => {
+router.delete('/products/:id',async (req, res) => {
     if(!admin){
         res.send({ error : -1, description: "ruta 'products' método 'delete' no autorizado" });
         return
     }
     let id = req.params.id;
-    if(!products.get(id)){
+    if(!(await products.get(id))){
         res.send({"error":"No se encuentra el producto"})
+        return
     }
-    let erasedProduct = products.delete(id);
+    let erasedProduct = await products.delete(id);
     res.send(erasedProduct);
 });
 
-cartRouter.post('/',(req,res)=>{
-    const cart = {};
-    newCart = carts.push(cart);
+cartRouter.post('/',async (req,res)=>{
+    const cart = {products:[]};
+    newCart = await carts.push(cart);
     res.send(newCart);
 
 })
-cartRouter.delete('/:id',(req, res) => {
+cartRouter.delete('/:id',async (req, res) => {
     let id = req.params.id;
-    if(!carts.get(id)){
+    if(!(await carts.get(id))){
         res.send({"error":"No se encuentra el carrito"})
     }
-    let erasedCart = carts.delete(id);
+    let erasedCart = await carts.delete(id);
     res.send(erasedCart);
 })
-cartRouter.get('/:id/products',(req, res)=>{
+cartRouter.get('/:id/products',async (req, res)=>{
     let id = req.params.id;
     if(!carts.get(id)){
         res.send({"error":"No se encuentra el carrito"})
     }
-    let products = carts.get(id).products;
+    let products = (await carts.get(id)).products;
     res.send(products);
 })
-cartRouter.post('/:id/products/:productId',(req, res) =>{
+cartRouter.post('/:id/products/:productId',async (req, res) =>{
     let id = req.params.id;
     let productId = req.params.productId;
     if(!carts.get(id)){
@@ -141,43 +146,46 @@ cartRouter.post('/:id/products/:productId',(req, res) =>{
     if(!products.get(productId)){
         res.send({"error":"No se encuentra el producto"})
     }
-    let cart = carts.get(id);
-    let product = products.get(productId);
-    let newCart = {...cart};
+    let oldCart = await carts.get(id);
+    let product = await products.get(productId);
+    const newCart = {...oldCart};
+    
+    
     if(!newCart.products){
         newCart.products = []
     }
-    newCart.products.push(product);
-    carts.update(id,newCart);
-    res.send(carts.get(id));
+    await newCart.products.push(product);
+    await carts.update(id,newCart);
+    res.send(await carts.get(id));
 })
-cartRouter.delete('/:id/products/:productId',(req, res)=>{
+cartRouter.delete('/:id/products/:productId',async (req, res)=>{
     let id = req.params.id;
     let productId = req.params.productId;
     if(!carts.get(id)){
-        res.send({"error":"No se encuentra el carrito"})
-        return
+        return res.send({"error":"No se encuentra el carrito"})
+        
     }
     if(!products.get(productId)){
-        res.send({"error":"No se encuentra el producto"})
-        return
+        return res.send({"error":"No se encuentra el producto"})
+       
     }
-    let cart = carts.get(id);
+    let cart = await carts.get(id);
     let newCart = {...cart};
     if(!cart.products){
-        res.send({"error":"El carrito se encuentra vacio"})
-        return
+        return res.send({"error":"El carrito se encuentra vacio"})
     }
-    newCart.products.forEach((element,index,array) =>{
-        if(Number(element.id) === Number(productId)){
-            console.log("casacacaca")
+    newCart.products.forEach(async (element,index,array) =>{
+        console.log(element._id,productId)
+        if(String(element._id) === String(productId)){
             array.splice(index,1)
-            carts.update(id,newCart)
-            res.send(carts.get(id))
-            return
+            await carts.update(id,newCart)
+            console.log("HOALALLALA")
+            return res.send(await carts.get(id))
+        }
+        else{
+            return res.send({"error":"No se encontro el producto"})
         }
     })
-    res.send({"error":"No se encontro el producto"})
 })
 app.get('*', function(req, res) {
     res.send({ error : -2, descripcion: `ruta ${req.path} método 'get' no implementada`})
