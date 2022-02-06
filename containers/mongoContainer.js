@@ -19,7 +19,7 @@ class MongoContainer{
         object.timestamp = Date.now();
         const newItem = new this.model({...object})
         await newItem.save()
-        return newItem.id
+        return newItem
     }
     async getAll(){
         return await this.model.find({})

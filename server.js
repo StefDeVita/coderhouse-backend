@@ -1,8 +1,6 @@
-const {Container} = require('./containers/container.js')
+
 require('dotenv').config()
-const {MongoContainer} = require('./containers/mongoContainer')
-const Carts = require('./models/carts')
-const Products = require('./models/products')
+const {ProductsDao,CartsDao} = require('./daos/ContainerCreator')
 const express = require('express');
 const PORT = process.env.PORT || 8080;
 let admin = true;
@@ -16,32 +14,9 @@ const cartRouter = new Router()
 app.use(express.static('public'));
 app.use('/api',router);
 app.use('/cart',cartRouter);
-class ProductsApi{
-    constructor(model){
-        this.products = new MongoContainer(process.env.MONGO_URI,model);
-    }
-    async getAll(){
-        return this.products.getAll();
-    }
-    async push(product){
-        let id = await this.products.save(product);
-        return await this.products.getById(id);
-    }
-    async update(id,product){
-        return this.products.update(id,product);
-    }
-    async delete(id){
-        let product = await this.products.getById(id)
-        this.products.deleteById(id);
-        return product;
-    }
-    async get(id){
-        return this.products.getById(id)
-    }
-}
 
-const products = new ProductsApi(Products);
-const carts = new ProductsApi(Carts);
+const products = ProductsDao;
+const carts = CartsDao;
 cartRouter.use(express.json());
 cartRouter.use(express.urlencoded({ extended: true}));
 router.use(express.json());
@@ -55,12 +30,12 @@ server.on("error",error => console.log(`Error en el servidor ${error}`));
 
 router.get('/products',async (req, res) => {
     let savedProducts = await products.getAll()
-    res.send(savedProducts);
+    res.send({statusCode:200,payload:savedProducts});
     
 })
 router.get('/products/:id',async (req, res) => {
     let id = req.params.id;
-    let product = await products.get(id);
+    let product = await products.getById(id);
     if(!product){
         res.send({"error":"No se encuentra el producto"})
         return;
@@ -79,8 +54,8 @@ router.post('/products',async (req,res) =>{
     }
     product.price = Number(product.price);
     product.stock = Number(product.stock);
-    let newProduct = await products.push(product);
-    res.send(newProduct);
+    let newProduct = await products.save(product);
+    res.send({statusCode:200,payload:newProduct});
 })
 router.put('/products/:id',async (req, res) => {
     if(!admin){
@@ -99,7 +74,7 @@ router.put('/products/:id',async (req, res) => {
     if(!newProduct){
         res.send({"error":"No se encuentra el producto"})
     }
-    res.send(newProduct);
+    res.send({statusCode:200,payload:newProduct});
 })
 router.delete('/products/:id',async (req, res) => {
     if(!admin){
@@ -107,47 +82,47 @@ router.delete('/products/:id',async (req, res) => {
         return
     }
     let id = req.params.id;
-    if(!(await products.get(id))){
+    if(!(await products.getById(id))){
         res.send({"error":"No se encuentra el producto"})
         return
     }
-    let erasedProduct = await products.delete(id);
-    res.send(erasedProduct);
+    let erasedProduct = await products.deleteById(id);
+    res.send({statusCode:200,erasedProduct});
 });
 
 cartRouter.post('/',async (req,res)=>{
     const cart = {products:[]};
-    newCart = await carts.push(cart);
-    res.send(newCart);
+    newCart = await carts.save(cart);
+    res.send({statusCode:200,newCart});
 
 })
 cartRouter.delete('/:id',async (req, res) => {
     let id = req.params.id;
-    if(!(await carts.get(id))){
+    if(!(await carts.getById(id))){
         res.send({"error":"No se encuentra el carrito"})
     }
-    let erasedCart = await carts.delete(id);
-    res.send(erasedCart);
+    let erasedCart = await carts.deleteById(id);
+    res.send({statusCode:200,payload:erasedCart});
 })
 cartRouter.get('/:id/products',async (req, res)=>{
     let id = req.params.id;
-    if(!carts.get(id)){
+    if(!carts.getById(id)){
         res.send({"error":"No se encuentra el carrito"})
     }
-    let products = (await carts.get(id)).products;
-    res.send(products);
+    let products = (await carts.getById(id)).products;
+    res.send({statusCode:200,payload:products});
 })
 cartRouter.post('/:id/products/:productId',async (req, res) =>{
     let id = req.params.id;
     let productId = req.params.productId;
-    if(!carts.get(id)){
+    if(!carts.getById(id)){
         res.send({"error":"No se encuentra el carrito"})
     }
-    if(!products.get(productId)){
+    if(!products.getById(productId)){
         res.send({"error":"No se encuentra el producto"})
     }
-    let oldCart = await carts.get(id);
-    let product = await products.get(productId);
+    let oldCart = await carts.getById(id);
+    let product = await products.getById(productId);
     const newCart = {...oldCart};
     
     
@@ -156,7 +131,7 @@ cartRouter.post('/:id/products/:productId',async (req, res) =>{
     }
     await newCart.products.push(product);
     await carts.update(id,newCart);
-    res.send(await carts.get(id));
+    res.send({statusCode:200,payload:await carts.getById(id)});
 })
 cartRouter.delete('/:id/products/:productId',async (req, res)=>{
     let id = req.params.id;
@@ -179,8 +154,7 @@ cartRouter.delete('/:id/products/:productId',async (req, res)=>{
         if(String(element._id) === String(productId)){
             array.splice(index,1)
             await carts.update(id,newCart)
-            console.log("HOALALLALA")
-            return res.send(await carts.get(id))
+            return res.send({statusCode:200,payload:await carts.get(id)})
         }
         else{
             return res.send({"error":"No se encontro el producto"})

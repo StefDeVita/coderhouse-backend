@@ -49,7 +49,7 @@ class Container{
         write(this.path,JSON.stringify(this.content)).catch(err=>{
             console.log("Error al escribir",err)
         })
-        return this._id - 1;
+        return object;
     }
     getAll(){
         return this.content;
