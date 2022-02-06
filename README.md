@@ -31,6 +31,7 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
   DELETE: '/:id/productos/:id_prod' - Eliminar un producto del carrito por su id de carrito y de producto
 
   ```
+  En caso de ser exitosas las peticiones devolveran un objeto con un status 200 de éxito y el payload que corresponda.  
 ## Formato de objetos
   Los productos aceptados cuentan con el siguiente formato:
   
@@ -57,3 +58,7 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
 
   ```
   Estos se crearar y se devolveran con el arreglo vacio ademas de su id y timestamp correspondiente
+
+  ## Almacenamiento de los objetos
+
+  Se decidira en base a una variable de entorno llamada STORAGE_MODE el tipo de almacenamiento pudiendo elegir entre MONGO(mongodb),FIRE(firestore) y FILES(filesystem).Dependiendo de esta variable se crearan los contenedores correspondientes.
