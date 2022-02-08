@@ -2,6 +2,7 @@ const {Container} = require('./container.js')
 const {knexMariaDB} = require('./options/mariaDB.js');
 const {knexSQLite} = require('./options/SQLite3.js');
 const {createTables} = require('./createTable.js');
+const testProducts = require('./testProducts')
 createTables();
 const express = require('express');
 const PORT = 8080;
@@ -18,6 +19,7 @@ app.use(express.static('views'));
 app.use('/api',router)
 app.set('view engine', 'ejs');
 app.set('views','./views')
+app.set('socketio',io)
 class ProductsApi{
     constructor(db,tableName){
         this.products = new Container(db,tableName);
@@ -106,7 +108,6 @@ io.on('connection', (socket) => {
     })()
 });
 
-app.get('/products',(req,res)=>{
-    let products = productsApi.getAll()
-    res.render('products',{products});
+router.get('/products-test',(req,res) =>{
+    res.render('testProducts',{products:testProducts})
 })
