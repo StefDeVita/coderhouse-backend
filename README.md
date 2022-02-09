@@ -27,13 +27,24 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
   ```
   Por otro lado los mensajes aceptados cuentan con el siguiente formato
   ```
-  {
-    author: (email del autor),
-    text: (texto del mensaje),
-    date: (fecha del mensaje formateada para mostrarse en la página)
+  { 
+    author: {
+        id: 'mail del usuario', 
+        nombre: 'nombre del usuario', 
+        apellido: 'apellido del usuario', 
+        edad: 'edad del usuario', 
+        alias: 'alias del usuario',
+        avatar: 'url avatar (foto, logo) del usuario'
+    },
+    text: 'mensaje del usuario'
   }
+  Ademas se le añade un atributo date en author al momento de guardarse
 
   ```
 ## Guardado de los datos
 
-Los datos (tanto los productos como los mensajes) son guardados en dos bases de datos una de MariaDB y otra de SQLite3, para poder guardar de manera local los datos en la base de MariaDB se debe inicializar MySQL en XAMPP o similares y darle los permisos requeridos. La base de SQLite se guardara en un archivo en el directorio db/messages.sqlite.
+Los datos son guardados en dos bases de datos una de MariaDB y otra de SQLite3, para poder guardar de manera local los datos en la base de MariaDB se debe inicializar MySQL en XAMPP o similares y darle los permisos requeridos.
+
+Los mensajes por otro lado son almacenados en una base de mongoDB cuya uri se debe incluir en un archivo .env con el nombre MONGO_URI.
+
+
