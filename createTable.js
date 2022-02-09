@@ -7,7 +7,7 @@ knexMariaDB.schema.dropTableIfExists('products')
     table.string("title")
     table.integer("price")
     table.string("thumbnail")
-}).then(() => console.log("products table created"))
+}).then(() => console.log("SQL products table created"))
 .catch((err) => console.log(err))
 
 knexSQLite.schema.dropTableIfExists('messages')
@@ -16,7 +16,7 @@ knexSQLite.schema.dropTableIfExists('messages')
     table.string('author')
     table.string('text')
     table.string('date')
-}).then(() => console.log("messages table created"))
+}).then(() => console.log("SQL messages table created"))
 .catch((err) => console.log(err))
 }
 module.exports = {

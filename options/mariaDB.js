@@ -1,4 +1,4 @@
-const knexMariaDB = require('knex')({
+const knexMariaDB =  require('knex')({
     client:"mysql",
     connection:{
         host:'127.0.0.1',
@@ -7,6 +7,6 @@ const knexMariaDB = require('knex')({
         database:'test'
     }
 })
-module.exports={
-    knexMariaDB
+module.exports= {
+     knexMariaDB
 }

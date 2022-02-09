@@ -1,4 +1,9 @@
 const socket = io.connect();
+const author = new normalizr.schema.Entity('authors')
+
+const messageSchema = new normalizr.schema.Entity('messages',{
+    id: author
+})
 
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
@@ -17,12 +22,18 @@ function addMessage(e) {
     let date = new Date();
     let formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
     const message = {
-        author: document.getElementById('username').value,
-        text: document.getElementById('message-text').value,
-        date: formattedDate
+        author:{
+            _id: document.getElementById('username').value,
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            age: document.getElementById('age').value,
+            alias: document.getElementById('alias').value,
+            avatar: document.getElementById('avatar').value,
+            date: formattedDate
+        },
+        text: document.getElementById('message-text').value
     };
     socket.emit('new-message', message);
-    console.log(message)
     return false;
 }
 const render = (products) => {
@@ -43,14 +54,23 @@ const render = (products) => {
     document.getElementById('table').innerHTML += html;
 
 }
-const messageRender = (messages) => {
+const messageRender = (normalizedMessages) => {
+    const messages = normalizr.denormalize(normalizedMessages.result,messageSchema,normalizedMessages.entities)
     if (messages.length === 0) {
         document.getElementById('message-container').innerHTML = `<h3 class="alert alert-danger">no se encontraron mensajes</h3>`;
         return;
     }
-    let html = messages.map(function (message, index) {
+    let html = Object.values(messages).map(function (message, index) {
+        if(message === undefined){
+            return;
+        }
         return (`<div class="flex">
-            <div class="d-flex"><p class="author">${message.author}</p><p class="date">[${message.date}]:</p><p class="message"> ${message.text}</p></div>
+            <div class="d-flex">
+            <p class="author">${message.author[0]._id}</p>
+            <p class="date">[${message.author[0].date}]:</p>
+            <p class="message"> ${message.text}</p>
+            <img style="max-height : 40px"class="img-fluid" src="${message.author[0].avatar}" alt="${message.author[0]._id}'s avatar">
+            </div>
         </div>`)
     }).join("");
     document.getElementById('message-container').innerHTML = html;
@@ -59,7 +79,7 @@ socket.on('error', () => {
     document.getElementById('error-container').innerHTML = '<h2 class="title">Error en el formato del producto, no deje ningun campo en blanco e ingrese un valor númerico al precio</h2>';
 })
 socket.on('mailError', () => {
-    document.getElementById('mailError-container').innerHTML = '<h2 class="title">Error en el formato del mensaje, no deje ningun campo en blanco e ingrese un valor válido en el campo de email</h2>';
+    document.getElementById('mailError-container').innerHTML = '<h2 class="title">Error en el formato del mensaje, no deje ningun campo en blanco e ingrese un valor válido en el campo de email. Ademas compruebe que la edad sea un valor númerico</h2>';
 })
 socket.on('messages', data => {
     messageRender(data);
@@ -85,6 +105,3 @@ const addProduct = (e) => {
     document.getElementById("title").focus();
     return false;
 }
-socket.on('messages', data => {
-    console.log(data);
-});

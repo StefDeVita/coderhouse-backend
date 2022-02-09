@@ -1,7 +1,12 @@
+require('dotenv').config()
+const {MongoContainer} = require('./mongoContainer')
+const {normalize} = require('normalizr')
 const {Container} = require('./container.js')
 const {knexMariaDB} = require('./options/mariaDB.js');
+const messageSchema = require('./models/messageSchema')
 const {knexSQLite} = require('./options/SQLite3.js');
 const {createTables} = require('./createTable.js');
+const Messages = require('./models/messageModel');
 const testProducts = require('./testProducts')
 createTables();
 const express = require('express');
@@ -50,12 +55,11 @@ const validateEmail = (inputText) =>{
     }
     else
     {
-        console.log(inputText)
         return false;
     }
 }
 const productsApi = new ProductsApi(knexMariaDB,'products');
-const messagesApi = new ProductsApi(knexSQLite,'messages');
+const messagesApi = new MongoContainer(process.env.MONGO_URI,Messages)
 router.use(express.json())
 router.use(express.urlencoded({ extended: true }))
 app.use(express.urlencoded({ extended: true }));
@@ -82,8 +86,13 @@ io.on('connection', (socket) => {
     (async () =>{
     
     let products = await productsApi.getAll();
+    let normalizedMessages = await messagesApi.getAll()
+    if(normalizedMessages !== []){
+        normalizedMessages.id = 1
+        normalizedMessages = normalize(normalizedMessages,messageSchema)
+    }
     socket.emit('products',products)
-    socket.emit('messages',await messagesApi.getAll())
+    socket.emit('messages',normalizedMessages)
     socket.on('product',data =>{
         if(data.title === "" || data.thumbnail === "" || !isNumeric(data.price)){
             io.sockets.emit('error');
@@ -95,15 +104,18 @@ io.on('connection', (socket) => {
             io.sockets.emit('products',products)
         }
         )}) 
-    socket.on('new-message',data => {
-        if(data.message === "" || !validateEmail(data.author)){
+    socket.on('new-message',async data => {
+        if(!isNumeric(data.author.age) || data.text === "" || !validateEmail(data.author._id)){
             io.sockets.emit('mailError');
             return
         }
-        messagesApi.push(data);
-        messagesApi.getAll().then(messages=>{
-            io.sockets.emit('messages', messages)
-        })
+        
+        await messagesApi.save(data);
+        const messages = await messagesApi.getAll()
+        messages.id = 1
+        let normalizedMessages =  normalize(messages,messageSchema)
+        io.sockets.emit('messages', normalizedMessages)
+        
     });
     })()
 });
