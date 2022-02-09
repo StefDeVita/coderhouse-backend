@@ -74,6 +74,8 @@ const messageRender = (normalizedMessages) => {
         </div>`)
     }).join("");
     document.getElementById('message-container').innerHTML = html;
+    let compression = (100 * JSON.stringify(messages).length) /JSON.stringify(normalizedMessages).length
+    document.getElementById('compression').innerHTML = `La tasa de compresion es del ${compression}%`;
 }
 socket.on('error', () => {
     document.getElementById('error-container').innerHTML = '<h2 class="title">Error en el formato del producto, no deje ningun campo en blanco e ingrese un valor númerico al precio</h2>';
