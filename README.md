@@ -18,26 +18,6 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
   GET '/api/products/:id' -> devuelve un producto según su id.
   POST '/api/products' -> recibe y agrega un producto, y lo devuelve con su id asignado.
   PUT '/api/products/:id' -> recibe y actualiza un producto según su id.
-# Coderhouse-Backend
-Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
-
-## Correr el proyecto
-  Primero se deben instalar todas las dependencias con el comando
-  ```
-  npm install
-  ```
-  Luego el proyecto se inicializa corriendo el siguiente script:
-  ```
-  npm run start
-  ```
-## Peticiones al server
-
-  Actualmente se pueden hacer las siguientes peticiones para productos
-  ```
-  GET '/api/products' -> devuelve todos los productos.
-  GET '/api/products/:id' -> devuelve un producto según su id.
-  POST '/api/products' -> recibe y agrega un producto, y lo devuelve con su id asignado.
-  PUT '/api/products/:id' -> recibe y actualiza un producto según su id.
   DELETE '/api/products/:id' -> elimina un producto según su id.
 
   ```
