@@ -1,0 +1,20 @@
+<% if (typeof user!=='undefined') { %>
+    <form action="/logout">
+        <div class="alert alert-primary">
+            Bienvenido <%= user %> !
+            <input type="submit" value="Logout" class="btn btn-primary">
+        </div>
+    </form>
+
+<% }else{ %>
+<form action="/login" method="post" role="form" class="form">
+    <div class="form-group">
+        <label for="username">Ingrese aquí su nombre: </label>
+        <input id="username" name="username" placeholder="Username" class="form-control">
+    </div>
+    <div class="form-group">
+        
+        <input id="usernameInput" class="btn btn-success my-3" type="submit" value="Login">
+    </div>
+</form>
+<% } %>

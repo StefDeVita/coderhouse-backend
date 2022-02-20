@@ -4,7 +4,6 @@ const {normalize} = require('normalizr')
 const {Container} = require('./container.js')
 const {knexMariaDB} = require('./options/mariaDB.js');
 const messageSchema = require('./models/messageSchema')
-const {knexSQLite} = require('./options/SQLite3.js');
 const {createTables} = require('./createTable.js');
 const Messages = require('./models/messageModel');
 const testProducts = require('./testProducts')
@@ -16,10 +15,29 @@ const {Router} = express;
 const app = express()
 const httpServer = require('http').Server(app)
 const io = require('socket.io')(httpServer)
+const cookieParser = require('cookie-parser')
+const session = require('express-session')
+const MongoStore = require('connect-mongo')
+const advancedOptions = {useNewUrlParser:true,useUnifiedTopology:true}
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 const router = Router();
+app.use(cookieParser())
+app.use(session({
+    store:MongoStore.create({
+        mongoUrl: process.env.MONGO_URI,
+        mongoOptions: advancedOptions
+    }),
+    secret:'secreto',
+    resave:false,
+    saveUninitialized:false,
+    cookie:{
+        maxAge:60000
+    }
+})
+
+)
 app.use(express.static('views'));
 app.use('/api',router)
 app.set('view engine', 'ejs');
@@ -78,7 +96,25 @@ app.post('/products',(req, res)=>{
     productsApi.push(req.body);
     res.redirect('/')
 });
+app.post('/login',(req, res)=>{
+    const name = req.body;
+    req.session.name = name.username;
+    res.redirect('/')
+    
+})
+app.get('/goodbye',(req,res)=>{
+    let name = req.session.name;
+    req.session.destroy(err => console.log(err));
+    res.render('goodbye',{name:name});
+    
+})
+app.get('/logout',(req,res)=>{
+    res.redirect('/goodbye')
+})
 app.get('/',(req,res)=>{
+    res.render('form',{user:req.session.name});
+})
+app.get('/login',(req,res)=>{
     res.render('form');
 })
 io.on('connection', (socket) => {
