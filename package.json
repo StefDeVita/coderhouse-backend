@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@faker-js/faker": "^6.0.0-alpha.5",
+    "bcrypt": "^5.0.1",
     "connect-mongo": "^4.6.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.0",
@@ -22,6 +23,8 @@
     "mongoose": "^6.2.1",
     "mysql": "^2.18.1",
     "normalizr": "^3.6.1",
+    "passport": "^0.5.2",
+    "passport-local": "^1.0.0",
     "socket.io": "^4.4.1",
     "sqlite": "^4.0.23",
     "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master"

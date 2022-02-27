@@ -1,5 +1,9 @@
 require('dotenv').config()
 const {MongoContainer} = require('./mongoContainer')
+const passport = require('passport')
+const localPassport = require('./config/passport')
+const bcrypt = require('bcrypt');
+const User = require('./models/userModel')
 const {normalize} = require('normalizr')
 const {Container} = require('./container.js')
 const {knexMariaDB} = require('./options/mariaDB.js');
@@ -33,11 +37,13 @@ app.use(session({
     resave:false,
     saveUninitialized:false,
     cookie:{
-        maxAge:60000
+        maxAge:600000
     }
 })
 
 )
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static('views'));
 app.use('/api',router)
 app.set('view engine', 'ejs');
@@ -96,12 +102,7 @@ app.post('/products',(req, res)=>{
     productsApi.push(req.body);
     res.redirect('/')
 });
-app.post('/login',(req, res)=>{
-    const name = req.body;
-    req.session.name = name.username;
-    res.redirect('/')
-    
-})
+
 app.get('/goodbye',(req,res)=>{
     let name = req.session.name;
     req.session.destroy(err => console.log(err));
@@ -112,7 +113,12 @@ app.get('/logout',(req,res)=>{
     res.redirect('/goodbye')
 })
 app.get('/',(req,res)=>{
-    res.render('form',{user:req.session.name});
+    if(req.isAuthenticated()){
+        res.render('form',{user:req.user.email});
+    }
+    else{
+        res.render('form')
+    }
 })
 app.get('/login',(req,res)=>{
     res.render('form');
@@ -158,4 +164,30 @@ io.on('connection', (socket) => {
 
 router.get('/products-test',(req,res) =>{
     res.render('testProducts',{products:testProducts})
+})
+
+app.post('/register', async (req, res) => {
+    let hash = bcrypt.hashSync(req.body.password,parseInt(process.env.BCRYPT_ROUNDS))
+    const newUser = new User({
+        email: req.body.email,
+        password: hash,
+    })
+    const user = await User.findOne({email:req.body.email});
+    if(user){
+        res.render('signupError')
+        return
+    }
+    console.log('creating new user')
+    newUser.save(function (err, addedUser) {
+        if (err) return res.json({ err: err })
+        res.render('signupSuccess')
+    })
+})
+
+app.get('/register',(req,res)=>{
+    res.render('register')
+})
+
+app.post('/login',passport.authenticate('login',{failureRedirect:'/signinError'}),(req,res)=>{
+    res.redirect('/')
 })
