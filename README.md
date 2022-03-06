@@ -16,12 +16,25 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
 
   El sitio tiene implementado un sistema de login y registro que se almacena en una base de datos en la nube. Al registrarse sin ningún error y luego logearse
   en la página principal se mantendrá una sesión durante 10 minutos o hasta deslogearse con el botón correspondiente.
+## Numeros random
 
+  En la ruta /randomApi/random se generarán los números indicados por query con el argumento quantity o
+  10.000.000 en su defecto. Estos se mostrarán en formato clave valor siendo la clave el número y el valor la
+  cantidad de veces que se obtuvo
+## Información
 
+  En la ruta /info se podra ver la siguiente informacion:
+  
+  -Argumentos de entrada - Path de ejecución
+  -Nombre de la plataforma (sistema operativo) - Process id
+  -Versión de node.js - Carpeta del proyecto
+  -Memoria total reservada (rss)
 ## Muestra de objetos
+
   Los objetos agregados se muestran en una tabla en la página principal que se actualiza en vivo sin necesidad de recargar la misma para todos los clientes.
   Por otro lado los mensajes se muestran debajo de esta tabla de la misma forma. La página cuenta con dos formularios, uno para cada funcionalidad.
 ## Formato de objetos
+
   Los objetos (productos) aceptados cuentan con el siguiente formato:
   
   ```
