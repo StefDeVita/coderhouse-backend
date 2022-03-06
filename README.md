@@ -11,6 +11,13 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
   ```
   npm run start
   ```
+  
+## Login y registro
+
+  El sitio tiene implementado un sistema de login y registro que se almacena en una base de datos en la nube. Al registrarse sin ningún error y luego logearse
+  en la página principal se mantendrá una sesión durante 10 minutos o hasta deslogearse con el botón correspondiente.
+
+
 ## Muestra de objetos
   Los objetos agregados se muestran en una tabla en la página principal que se actualiza en vivo sin necesidad de recargar la misma para todos los clientes.
   Por otro lado los mensajes se muestran debajo de esta tabla de la misma forma. La página cuenta con dos formularios, uno para cada funcionalidad.
