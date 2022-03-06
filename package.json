@@ -27,6 +27,7 @@
     "passport-local": "^1.0.0",
     "socket.io": "^4.4.1",
     "sqlite": "^4.0.23",
-    "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master"
+    "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master",
+    "yargs": "^17.3.1"
   }
 }

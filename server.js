@@ -1,7 +1,8 @@
 require('dotenv').config()
 const {MongoContainer} = require('./mongoContainer')
+const yargs = require('yargs/yargs')(process.argv.slice(2))
 const passport = require('passport')
-const localPassport = require('./config/passport')
+const passportConfig = require('./config/passport.js')
 const bcrypt = require('bcrypt');
 const User = require('./models/userModel')
 const {normalize} = require('normalizr')
@@ -13,8 +14,7 @@ const Messages = require('./models/messageModel');
 const testProducts = require('./testProducts')
 createTables();
 const express = require('express');
-const PORT = 8080;
-const ejs = require('ejs');
+const {randomRouter} =require('./routers/randomRouter')
 const {Router} = express;
 const app = express()
 const httpServer = require('http').Server(app)
@@ -26,6 +26,14 @@ const advancedOptions = {useNewUrlParser:true,useUnifiedTopology:true}
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
+
+const argv = yargs.alias({
+    p: 'port'
+}).default({
+    port:8080
+}).argv
+
+const PORT = argv.port
 const router = Router();
 app.use(cookieParser())
 app.use(session({
@@ -33,7 +41,7 @@ app.use(session({
         mongoUrl: process.env.MONGO_URI,
         mongoOptions: advancedOptions
     }),
-    secret:'secreto',
+    secret:process.env.SECRET,
     resave:false,
     saveUninitialized:false,
     cookie:{
@@ -46,6 +54,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('views'));
 app.use('/api',router)
+app.use('/randomApi',randomRouter)
 app.set('view engine', 'ejs');
 app.set('views','./views')
 app.set('socketio',io)
@@ -191,3 +200,11 @@ app.get('/register',(req,res)=>{
 app.post('/login',passport.authenticate('login',{failureRedirect:'/signinError'}),(req,res)=>{
     res.redirect('/')
 })
+
+
+app.get('/info',(req,res)=>{
+    res.render('info',{argv:argv, process:process,__dirname:__dirname})
+})
+
+
+

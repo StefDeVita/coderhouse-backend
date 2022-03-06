@@ -1,0 +1,12 @@
+<%- include('./header')-%>
+<body>
+    <div class="container">
+        <p class="lead"> Argumentos de entrada:<%= JSON.stringify(argv) %></p>
+        <p class="lead"> Nombre de la plataforma: <%= process.platform %></p>
+        <p class="lead"> Versión de node.js:<%= process.version %></p>
+        <p class="lead"> Memoria total reservada (rss):<%= process.memoryUsage().rss %></p>
+        <p class="lead"> Path de ejecución:<%= process.cwd() %></p>
+        <p class="lead"> Process id:<%= process.pid %></p>
+        <p class="lead"> Carpeta del proyecto:<%= __dirname %></p>
+    </div>
+</body>
