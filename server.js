@@ -1,9 +1,10 @@
 require('dotenv').config()
 const {MongoContainer} = require('./mongoContainer')
-const yargs = require('yargs/yargs')(process.argv.slice(2))
+
 const passport = require('passport')
 const passportConfig = require('./config/passport.js')
 const bcrypt = require('bcrypt');
+const cpus = require("os").cpus().length;
 const User = require('./models/userModel')
 const {normalize} = require('normalizr')
 const {Container} = require('./container.js')
@@ -17,7 +18,7 @@ const express = require('express');
 const {randomRouter} =require('./routers/randomRouter')
 const {Router} = express;
 const app = express()
-const httpServer = require('http').Server(app)
+const httpServer = require('http')
 const io = require('socket.io')(httpServer)
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
@@ -27,13 +28,8 @@ function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-const argv = yargs.alias({
-    p: 'port'
-}).default({
-    port:8080
-}).argv
 
-const PORT = argv.port
+
 const router = Router();
 app.use(cookieParser())
 app.use(session({
@@ -97,11 +93,7 @@ router.use(express.json())
 router.use(express.urlencoded({ extended: true }))
 app.use(express.urlencoded({ extended: true }));
 
-const server = httpServer.listen(PORT,() => {
-    console.log(`Servidor escuchando en el puerto ${server.address().port}   `)
-});
 
-server.on("error",error => console.log(`Error en el servidor ${error}`));
 app.post('/products',(req, res)=>{
     newProduct = req.body
     if(newProduct.title === "" || newProduct.thumbnail === "" || !isNumeric(newProduct.price)){
@@ -203,8 +195,9 @@ app.post('/login',passport.authenticate('login',{failureRedirect:'/signinError'}
 
 
 app.get('/info',(req,res)=>{
-    res.render('info',{argv:argv, process:process,__dirname:__dirname})
+    res.render('info',{argv:argv,cpus:cpus, process:process,__dirname:__dirname})
 })
 
 
 
+module.exports = {app}
