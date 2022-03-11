@@ -26,8 +26,11 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
   En la ruta /info se podra ver la siguiente informacion:
   
   -Argumentos de entrada - Path de ejecución
+  
   -Nombre de la plataforma (sistema operativo) - Process id
+  
   -Versión de node.js - Carpeta del proyecto
+  
   -Memoria total reservada (rss)
 ## Muestra de objetos
 
