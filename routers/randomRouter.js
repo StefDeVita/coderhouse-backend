@@ -17,7 +17,7 @@ randomRouter.get('/random',(req,res)=>{
     const calculated = fork('./forks/child.js')
     calculated.send({cant: cant})
     calculated.on('message',calc =>{
-        res.render('numbers',{numbers:calc})
+        res.send({numerosCalculados:calc})
     })
     
 })

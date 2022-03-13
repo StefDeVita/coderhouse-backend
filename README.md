@@ -11,7 +11,26 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
   ```
   npm run start
   ```
+## Correr el proyecto en modo cluster y fork
+
+  El proyecto se puede correr en modo cluster de pm usando el script
   
+  ```
+  npm run cluster
+  ```
+  o en modo fork del mismo con el comando
+
+  ```
+  npm run fork
+  ```
+
+  tambien se puede utilizar forever para monitoreo con el comando de
+
+  ```
+  npm run forever
+  ```
+
+  Por otro lado con nginx es posible correr la funcionalidad de randomApi/random en un cluster de 5 puertos con el archivo de configuracion que se encuentra en el repo y corriendo el proyecto en los puertos 8080 8082 8083 8084 y 8085 el resto de las peticiones se manejaran en el puerto 8080
 ## Login y registro
 
   El sitio tiene implementado un sistema de login y registro que se almacena en una base de datos en la nube. Al registrarse sin ningún error y luego logearse

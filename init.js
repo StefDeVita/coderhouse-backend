@@ -8,10 +8,10 @@ const argv = yargs.alias({
     p: 'port',
     m:'mode'
 }).default({
-    port:8080,
+    port:process.argv[2] || 8080,
     mode:'fork'
 }).argv
-const PORT = argv.port
+const PORT = Number(argv.port)
 if(argv.mode === 'CLUSTER'){
     if(cluster.isMaster){
         console.log(`Master ${process.pid} esta corriendo`)
