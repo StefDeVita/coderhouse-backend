@@ -91,4 +91,10 @@ Los datos son guardados en dos bases de datos una de MariaDB y otra de SQLite3, 
 
 Los mensajes por otro lado son almacenados en una base de mongoDB cuya uri se debe incluir en un archivo .env con el nombre MONGO_URI.
 
+## Archivo .env
+El proyecto toma varios parametros desde el entorno de ejecucion que deberan ser definidos en un archivo .env de la siguiente forma
+MONGO_URI = "Url a DB mongo"
+BCRYPT_ROUNDS = "Rondas de encriptado para la contraseña(numero entero)"
+SECRET = "secreto para session"
+  
 
