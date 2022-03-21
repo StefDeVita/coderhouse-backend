@@ -112,3 +112,4 @@ Ademas tambien con devtools de node
 Tambien se incluye el grafico de flama en el archivo html en la carpeta terminada en .0x
   
 
+
