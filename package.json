@@ -4,19 +4,16 @@
   "description": "",
   "main": "contenedor.js",
   "scripts": {
-
     "start": "node init.js",
     "dev": "nodemon init.js",
     "prod": "pm2 start init.js --name='Server' --watch",
     "fork": "pm2 start init.js --name='ServerFork' --watch",
     "cluster": "pm2 start init.js --name='ServerCluster' --watch -i 1",
     "forever": "forever start -w init.js"
-
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-
     "@faker-js/faker": "^6.0.0-alpha.5",
     "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
@@ -40,6 +37,5 @@
     "winston": "^3.6.0",
     "winston-levelonly": "git+https://github.com/damianof/winston-levelonly.git",
     "yargs": "^17.3.1"
-
   }
 }
