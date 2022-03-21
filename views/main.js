@@ -1,4 +1,4 @@
-const socket = io.connect();
+const socket = io.connect()
 const author = new normalizr.schema.Entity('authors')
 
 const messageSchema = new normalizr.schema.Entity('messages',{

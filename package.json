@@ -16,12 +16,14 @@
   "dependencies": {
     "@faker-js/faker": "^6.0.0-alpha.5",
     "bcrypt": "^5.0.1",
+    "compression": "^1.7.4",
     "connect-mongo": "^4.6.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
+    "express-winston": "^4.2.0",
     "http": "0.0.1-security",
     "knex": "^0.95.15",
     "mongoose": "^6.2.1",
@@ -32,6 +34,8 @@
     "socket.io": "^4.4.1",
     "sqlite": "^4.0.23",
     "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master",
+    "winston": "^3.6.0",
+    "winston-levelonly": "git+https://github.com/damianof/winston-levelonly.git",
     "yargs": "^17.3.1"
   }
 }

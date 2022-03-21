@@ -1,17 +1,9 @@
-const yargs = require('yargs/yargs')(process.argv.slice(2))
 const cluster = require('cluster')
-const {app} = require('./server')
-const httpServer = require('http')
+const {app,argv,httpServer} = require('./server')
 const cpus = require("os").cpus().length;
 
-const argv = yargs.alias({
-    p: 'port',
-    m:'mode'
-}).default({
-    port:process.argv[2] || 8080,
-    mode:'fork'
-}).argv
-const PORT = Number(argv.port)
+
+const PORT = Number(argv.port) || 8080
 if(argv.mode === 'CLUSTER'){
     if(cluster.isMaster){
         console.log(`Master ${process.pid} esta corriendo`)
@@ -26,13 +18,13 @@ if(argv.mode === 'CLUSTER'){
 
     }
     else{
-        const server = httpServer.Server(app).listen(PORT,() => {
+        const server = httpServer.listen(PORT,() => {
             console.log(`Servidor escuchando en el puerto ${server.address().port}   `)
         });
     }
 }
 else{
-    const server = httpServer.Server(app).listen(PORT,() => {
+    const server = httpServer.listen(PORT,() => {
         console.log(`Servidor escuchando en el puerto ${server.address().port}   `)
     });
 }

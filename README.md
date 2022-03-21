@@ -96,5 +96,19 @@ El proyecto toma varios parametros desde el entorno de ejecucion que deberan ser
 MONGO_URI = "Url a DB mongo"
 BCRYPT_ROUNDS = "Rondas de encriptado para la contraseña(numero entero)"
 SECRET = "secreto para session"
+
+## Gzip
+
+El proyecto se encuentra comprimido en gzip que segun las pruebas realizadas aproximadamente reduce un 10% la cantidad de bytes
+escritos por las requests.
+
+## Pruebas de performances
+Se realizaron ademas pruebas de performance con autocannon
+![autocannon](img\autocannon.png)
+
+Ademas tambien con devtools de node
+![devtools](img\devtools.png)
+
+Tambien se incluye el grafico de flama en el archivo html en la carpeta terminada en .0x
   
 
