@@ -3,7 +3,7 @@ const {app,argv,httpServer} = require('./server')
 const cpus = require("os").cpus().length;
 
 
-const PORT = Number(argv.port) || process.env.PORT || 8080
+const PORT =  process.env.PORT || Number(argv.port) || 8080
 if(argv.mode === 'CLUSTER'){
     if(cluster.isMaster){
         console.log(`Master ${process.pid} esta corriendo`)
