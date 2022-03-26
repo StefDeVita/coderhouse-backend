@@ -9,6 +9,7 @@ const cpus = require("os").cpus().length;
 const User = require('./models/userModel')
 const {normalize} = require('normalizr')
 const {Container} = require('./container.js')
+const {knexSQLite} = require('./options/SQLite3.js')
 const {knexMariaDB} = require('./options/mariaDB.js');
 const messageSchema = require('./models/messageSchema')
 const {createTables} = require('./createTable.js');
@@ -113,7 +114,7 @@ const validateEmail = (inputText) =>{
         return false;
     }
 }
-const productsApi = new ProductsApi(knexMariaDB,'products');
+const productsApi = new ProductsApi(knexSQLite,'products');
 const messagesApi = new MongoContainer(process.env.MONGO_URI,Messages)
 router.use(express.json())
 router.use(express.urlencoded({ extended: true }))
@@ -186,7 +187,6 @@ io.on('connection', (socket) => {
             io.sockets.emit('mailError');
             return
         }
-        console.log("holaaaa")
         await messagesApi.save(data);
         const messages = await messagesApi.getAll()
         messages.id = 1

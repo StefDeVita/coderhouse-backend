@@ -9,7 +9,14 @@ class Container {
         this.knex(this.tableName).insert(object).then()
     }
     getAll() {
-        return this.knex.select().table(this.tableName).then()
+        try {
+            let values = this.knex.select().table(this.tableName).then()
+            return values
+        } catch (error) {
+            return {}
+        }
+        
+        
     }
     deleteById(id) {
         this.knex(this.tableName)
