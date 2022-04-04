@@ -37,24 +37,34 @@ function addMessage(e) {
     return false;
 }
 const render = (products) => {
+    if(!document.getElementById('table-container')){
+        return
+    }
     if (products.length === 0) {
         document.getElementById('table-container').innerHTML = `<h3 class="alert alert-danger">no se encontraron productos</h3>`;
         return;
     }
     document.getElementById('table-container').innerHTML = `<table id="table" class="table table-dark">
         <tr><th>Nombre</th> <th>Precio</th> <th>Imagen</th> </tr>`;
+    
 
     let html = products.map(function (product, index) {
-        return (`<tr>
-    <td>${product.title}</td>
-    <td>${product.price}</td> 
-    <td><img class="img-responsive" src="${product.thumbnail}" alt="${product.title}"></td>
+        return (
+    `<tr>
+        <td>${product.title}</td>
+        <td>${product.price}</td> 
+        <td><img class="img-responsive" src="${product.thumbnail}" alt="${product.title}"></td>
     </tr>`)
     }).join("");
+    
     document.getElementById('table').innerHTML += html;
 
 }
+
 const messageRender = (normalizedMessages) => {
+    if(!document.getElementById('message-container')){
+        return
+    }
     const messages = normalizr.denormalize(normalizedMessages.result,messageSchema,normalizedMessages.entities)
     if (messages.length === 0) {
         document.getElementById('message-container').innerHTML = `<h3 class="alert alert-danger">no se encontraron mensajes</h3>`;
@@ -84,6 +94,9 @@ socket.on('mailError', () => {
     document.getElementById('mailError-container').innerHTML = '<h2 class="title">Error en el formato del mensaje, no deje ningun campo en blanco e ingrese un valor válido en el campo de email. Ademas compruebe que la edad sea un valor númerico</h2>';
 })
 socket.on('messages', data => {
+    if(!document.getElementById('mailError-container')){
+        return
+    }
     messageRender(data);
     document.getElementById('mailError-container').innerHTML = "";
     document.getElementById('message-text').value = "";
@@ -91,7 +104,9 @@ socket.on('messages', data => {
 })
 socket.on('products', data => {
     render(data);
+    if(document.getElementById('error-container')){
     document.getElementById('error-container').innerHTML = "";
+    }
 
 })
 const addProduct = (e) => {

@@ -1,8 +1,17 @@
 <% if (typeof user!=='undefined') { %>
     <form action="/logout">
         <div class="alert alert-primary">
-            Bienvenido <%= user %> !
+            Bienvenido <%= user.email %> !
             <input type="submit" value="Logout" class="btn btn-primary">
+        </div>
+        <div class="alert alert-primary"> 
+            <p>Nombre: <%=user.name%> </p>
+            <p>Telefono: <%=user.telephone%> </p>
+            <p>Edad: <%=user.age%> </p>
+            <div class = container style="width:50%">
+                <label for="avatar">Avatar:</label>
+                <img src="<%=path + user.imgPath + '.jpg'%>" class="img-thumbnail img-fluid" alt=""%> " id="avatar" alt="avatar">
+            </div>
         </div>
     </form>
 
