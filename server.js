@@ -150,11 +150,11 @@ app.get('/buy',async (req,res)=>{
 })
 app.get('/',(req,res)=>{
     if(req.isAuthenticated()){
-        let puerto = ''
-        if(!process.env.port){
-            puerto = ':8080'
+        let port = ''
+        if(!process.env.PORT){
+            port = ':8080'
         }
-        res.render('form',{user:req.user,path: req.protocol + "://" + req.hostname + puerto});
+        res.render('form',{user:req.user,path: req.protocol + "://" + req.hostname + port});
     }
     else{
         res.render('form')
