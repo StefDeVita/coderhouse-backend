@@ -2,7 +2,7 @@ require('dotenv').config()
 const {MongoContainer} = require('./mongoContainer')
 const {cartRouter,carts} = require('./routers/cartRouter')
 const winston = require('winston');
-const {sendBuyMailandMessage} = require('./controllers/messages')
+const {sendBuyMailandMessage,sendRegisterMail} = require('./controllers/messagesController')
 const compression = require('compression')
 const passport = require('passport')
 const multer = require('multer')
@@ -239,7 +239,6 @@ router.get('/products-test',(req,res) =>{
 })
 
 app.post('/register',upload.single('avatar'), async (req, res,next) => {
-    console.log(req.file,req.body.avatar)
     logger.info(`${req.route.path} ${req.method}`, 'register');
     let hash = bcrypt.hashSync(req.body.password,parseInt(process.env.BCRYPT_ROUNDS))
     const newUser = new User({
@@ -261,9 +260,9 @@ app.post('/register',upload.single('avatar'), async (req, res,next) => {
     console.log('creating new user')
     newUser.save(function (err, addedUser) {
         if (err) return res.json({ err: err })
-        res.render('signupSuccess')
+        res.render('signupSuccess');
     })
-    
+    await sendRegisterMail(newUser);
 })
 
 app.get('/register',(req,res)=>{

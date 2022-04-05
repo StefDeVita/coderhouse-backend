@@ -96,6 +96,12 @@ El proyecto toma varios parametros desde el entorno de ejecucion que deberan ser
 MONGO_URI = "Url a DB mongo"
 BCRYPT_ROUNDS = "Rondas de encriptado para la contraseña(numero entero)"
 SECRET = "secreto para session"
+NODEMAILER_MAIL = "Mail para nodemailer"
+NODEMAILER_PASS = "Pass para Nodemailer"
+NODEMAILER_HOST = "Host de nodemailer"
+NODEMAILER_PORT = "Puerto para nodemailer"
+TWILIO_TOKEN = "Token de twilio"
+TWILIO_PASS = "Pass de twilio" 
 
 ## Gzip
 
