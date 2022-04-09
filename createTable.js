@@ -1,7 +1,8 @@
 const {knexMariaDB} = require('./options/mariaDB.js');
 const {knexSQLite} = require('./options/SQLite3.js');
-const  createTables = () =>{
-if(!knexSQLite.schema.hasTable('products')){
+const  createTables = async () =>{
+
+if(! await knexSQLite.schema.hasTable('products')){
 knexSQLite.schema.dropTableIfExists('products')   
 .createTable('products',table =>{
     table.increments("id")
@@ -11,7 +12,7 @@ knexSQLite.schema.dropTableIfExists('products')
 }).then(() => console.log("SQL products table created"))
 .catch((err) => console.log(err))
 }
-if(!knexSQLite.schema.hasTable('products')){
+if(! await knexSQLite.schema.hasTable('messages')){
 knexSQLite.schema.dropTableIfExists('messages')
 .createTable('messages',table =>{
     table.increments('id')

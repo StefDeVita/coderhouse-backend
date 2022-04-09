@@ -47,7 +47,7 @@ const sendBuyMailandMessage = async (user) =>{
      const twilioOptions = {
         body: 'Nuevo pedido de ' + user.name + ' ' + twilioString,
         from: 'whatsapp:+14155238886',
-        to: 'whatsapp:+5491140238224'
+        to: process.env.TWILIO_DESTINATION_NUMBER
      }
      
      try {

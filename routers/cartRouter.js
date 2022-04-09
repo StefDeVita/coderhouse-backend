@@ -1,7 +1,7 @@
 const express = require('express');
 const {Router} = express
 const cartModel = require('../models/cartModel')
-const {MongoContainer} = require('../mongoContainer')
+const {MongoContainer} = require('../containers/mongoContainer')
 
 const cartRouter = new Router()
 cartRouter.use(express.json());
