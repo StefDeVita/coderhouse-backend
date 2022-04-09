@@ -93,6 +93,7 @@ Los mensajes por otro lado son almacenados en una base de mongoDB cuya uri se de
 
 ## Archivo .env
 El proyecto toma varios parametros desde el entorno de ejecucion que deberan ser definidos en un archivo .env de la siguiente forma
+```
 MONGO_URI = "Url a DB mongo"
 BCRYPT_ROUNDS = "Rondas de encriptado para la contraseña(numero entero)"
 SECRET = "secreto para session"
@@ -102,7 +103,8 @@ NODEMAILER_HOST = "Host de nodemailer"
 NODEMAILER_PORT = "Puerto para nodemailer"
 TWILIO_TOKEN = "Token de twilio"
 TWILIO_PASS = "Pass de twilio" 
-
+TWILIO_DESTINATION_NUMBER = "numero de whatsapp al que se enviara la confirmacion del pedido formato whatsapp:numero"
+```
 ## Gzip
 
 El proyecto se encuentra comprimido en gzip que segun las pruebas realizadas aproximadamente reduce un 10% la cantidad de bytes
