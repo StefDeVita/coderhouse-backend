@@ -23,7 +23,7 @@ function addMessage(e) {
     let formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
     const message = {
         author:{
-            _id: document.getElementById('username').value,
+            mail: document.getElementById('username').value,
             firstName: document.getElementById('firstName').value,
             lastName: document.getElementById('lastName').value,
             age: document.getElementById('age').value,
@@ -33,6 +33,7 @@ function addMessage(e) {
         },
         text: document.getElementById('message-text').value
     };
+    console.log(message)
     socket.emit('new-message', message);
     return false;
 }
@@ -76,10 +77,10 @@ const messageRender = (normalizedMessages) => {
         }
         return (`<div class="flex">
             <div class="d-flex">
-            <p class="author">${message.author[0]._id}</p>
-            <p class="date">[${message.author[0].date}]:</p>
+            <p class="author">${message.author.mail}</p>
+            <p class="date">[${message.author.date}]:</p>
             <p class="message"> ${message.text}</p>
-            <img style="max-height : 40px"class="img-fluid" src="${message.author[0].avatar}" alt="${message.author[0]._id}'s avatar">
+            <img style="max-height : 40px"class="img-fluid" src="${message.author.avatar}" alt="${message.author.mail}'s avatar">
             </div>
         </div>`)
     }).join("");
@@ -97,6 +98,7 @@ socket.on('messages', data => {
     if(!document.getElementById('mailError-container')){
         return
     }
+    console.log(data.entities.messages)
     messageRender(data);
     document.getElementById('mailError-container').innerHTML = "";
     document.getElementById('message-text').value = "";

@@ -1,5 +1,5 @@
 const {MongoContainer} = require('../containers/mongoContainer');
-const User = require('../models/userModel')
+const User = require('../../models/userModel')
 
 
 class UserDao extends MongoContainer {

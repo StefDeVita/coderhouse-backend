@@ -1,8 +1,7 @@
-const {Container} = require('./container')
-const {knexSQLite} = require('../options/SQLite3.js')
-class ProductsApi{
-    constructor(db,tableName){
-        this.products = new Container(db,tableName);
+const {ProductsDao} = require('./containerCreator')
+class ProductsDto{
+    constructor(){
+        this.products = ProductsDao;
     }
     getAll(){
         return this.products.getAll();
@@ -23,5 +22,5 @@ class ProductsApi{
     }
 }
 
-const productsApi = new ProductsApi(knexSQLite,'products')
-module.exports = productsApi
+const productsDto = new ProductsDto()
+module.exports = productsDto

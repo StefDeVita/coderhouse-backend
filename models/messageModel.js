@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const messageSchema = new mongoose.Schema({
-    author: [{
-        _id:String,
+    author: {
+        mail:String,
         firstName:String,
         lastName:String,
         age:Number,
@@ -10,7 +10,7 @@ const messageSchema = new mongoose.Schema({
         avatar:String,
         date:String
 
-    }],
+    },
     text: String
 })
 

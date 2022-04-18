@@ -2,24 +2,24 @@ require('dotenv').config()
 const express = require('express');
 
 const app = express()
-const {createTables} = require('./createTable.js');
+const {createTables} = require('./options/createTable.js');
 createTables();
 
 const httpServer = require('http').Server(app)
-const io = require('./config/socket.js').init(httpServer);
-const {MongoContainer} = require('./containers/mongoContainer')
+const io = require('./api/config/socket.js').init(httpServer);
+const {MongoContainer} = require('./api/containers/mongoContainer')
 const {cartRouter,carts} = require('./routers/cartRouter')
 const {apiRouter} = require('./routers/apiRouter')
-const {logger,errorLogger} = require('./config/logger')
-const {getBuyController,postBuyController} = require('./controllers/buyController')
-const {newProductController,addCartController,newMessageController} = require('./controllers/socketsController')
-const {homepageController,logoutController,getLoginController,postRegisterController,getRegisterController,postLoginController,validateEmail,getSignInErrorController,getLogoutController} = require('./controllers/authController')
-const {defaultPutController,defaultDeleteController,defaultPostController} = require('./controllers/defaultController')
-const {postProductController} = require('./controllers/productController')
+const {logger,errorLogger} = require('./api/config/logger')
+const {getBuyController,postBuyController} = require('./api/controllers/buyController')
+const {newProductController,addCartController,newMessageController} = require('./api/controllers/socketsController')
+const {homepageController,logoutController,getLoginController,postRegisterController,getRegisterController,postLoginController,validateEmail,getSignInErrorController,getLogoutController} = require('./api/controllers/authController')
+const {defaultPutController,defaultDeleteController,defaultPostController} = require('./api/controllers/defaultController')
+const {postProductController} = require('./api/controllers/productController')
 const compression = require('compression')
 const passport = require('passport')
 const multer = require('multer')
-const passportConfig = require('./config/passport.js')
+const passportConfig = require('./api/config/passport.js')
 const cpus = require("os").cpus().length;
 const User = require('./models/userModel')
 const {normalize} = require('normalizr')
@@ -28,16 +28,16 @@ const messageSchema = require('./models/messageSchema')
 
 const Messages = require('./models/messageModel');
 const testProducts = require('./testProducts')
-const productsApi = require('./containers/productsApi')
 
 const {randomRouter} =require('./routers/randomRouter')
 const {Router} = express;
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
-const mongoSession = require('./config/mongoSession')
+const mongoSession = require('./api/config/mongoSession')
 const { indexOf } = require('./testProducts');
-const argv = require('./config/argv')
-
+const argv = require('./api/config/argv')
+const productsApi = require('./api/containers/productsDto')
+const messagesApi = require('./api/containers/messagesDto')
 
 
 
@@ -58,7 +58,6 @@ app.set('views','./views')
 app.set('socketio',io)
 
 
-const messagesApi = new MongoContainer(process.env.MONGO_URI,Messages)
 
 app.use(express.urlencoded({ extended: true }));
 const storage = multer.diskStorage({

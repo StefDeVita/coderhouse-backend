@@ -1,5 +1,5 @@
 
-class Container {
+class ContainerSQL {
     constructor(knex,tableName) {
         this.knex = knex;
         this.tableName = tableName;
@@ -35,5 +35,5 @@ class Container {
     }
 }
 module.exports = {
-    Container
+    ContainerSQL
 }

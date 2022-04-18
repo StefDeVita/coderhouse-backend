@@ -104,6 +104,7 @@ NODEMAILER_PORT = "Puerto para nodemailer"
 TWILIO_TOKEN = "Token de twilio"
 TWILIO_PASS = "Pass de twilio" 
 TWILIO_DESTINATION_NUMBER = "numero de whatsapp al que se enviara la confirmacion del pedido formato whatsapp:numero"
+STORAGE_MODE = "MONGO o bien SQL dependiendo del tipo de almacenamiento deseado para productos y mensajes"
 ```
 ## Gzip
 
