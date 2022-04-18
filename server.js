@@ -27,14 +27,14 @@ const {normalize} = require('normalizr')
 const messageSchema = require('./models/messageSchema')
 
 const Messages = require('./models/messageModel');
-const testProducts = require('./testProducts')
+const testProducts = require('./tests/testProducts')
 
 const {randomRouter} =require('./routers/randomRouter')
 const {Router} = express;
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const mongoSession = require('./api/config/mongoSession')
-const { indexOf } = require('./testProducts');
+const { indexOf } = require('./tests/testProducts');
 const argv = require('./api/config/argv')
 const productsApi = require('./api/containers/productsDto')
 const messagesApi = require('./api/containers/messagesDto')
