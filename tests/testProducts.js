@@ -5,7 +5,7 @@ const createProducts = () =>{
     for(let i = 0; i < 15;i++){
         const newProduct = {
             title: faker.commerce.product(),
-            price: faker.commerce.price(5,100),
+            price: Number(faker.commerce.price(5,100)),
             thumbnail: faker.image.image()
         }
         products.push(newProduct);

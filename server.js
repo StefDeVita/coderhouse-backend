@@ -15,7 +15,7 @@ const {getBuyController,postBuyController} = require('./api/controllers/buyContr
 const {newProductController,addCartController,newMessageController} = require('./api/controllers/socketsController')
 const {homepageController,logoutController,getLoginController,postRegisterController,getRegisterController,postLoginController,validateEmail,getSignInErrorController,getLogoutController} = require('./api/controllers/authController')
 const {defaultPutController,defaultDeleteController,defaultPostController} = require('./api/controllers/defaultController')
-const {postProductController} = require('./api/controllers/productController')
+const {postProductController,getProductController,putProductController,deleteProductController} = require('./api/controllers/productController')
 const compression = require('compression')
 const passport = require('passport')
 const multer = require('multer')
@@ -71,13 +71,14 @@ const storage = multer.diskStorage({
 const upload = multer({storage:storage})
 
 app.post('/products',postProductController);
-
+app.put('/products/:id',putProductController);
+app.get('/products',getProductController);
 app.get('/goodbye',logoutController)
 app.get('/logout',getLogoutController);
 app.get('/buy',getBuyController)
 app.get('/',homepageController)
 app.get('/login',getLoginController)
-
+app.delete('/products/:id',deleteProductController);
 app.post('/finalizeBuy',postBuyController)
 
 io.on('connection', (socket,req) => {
