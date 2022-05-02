@@ -90,7 +90,27 @@ Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
 Los datos son guardados en dos bases de datos una de MariaDB y otra de SQLite3, para poder guardar de manera local los datos en la base de MariaDB se debe inicializar MySQL en XAMPP o similares y darle los permisos requeridos.
 
 Los mensajes por otro lado son almacenados en una base de mongoDB cuya uri se debe incluir en un archivo .env con el nombre MONGO_URI.
+## GraphQL
 
+Esta rama del proyecto tiene implementada la parte de productos,ademas, en GraphQL en la ruta /graphql.
+Estan implementadas las funciones getProducts,saveProduct,updateProduct y deleteProduct con su correspondiente funcionalidad
+deleteProduct recibe el id del producto, saveProduct recibe un objeto producto que respeta el formato anterior de title,price,thumbnail y updateProduct recibe tanto el id como el nuevo producto que reemplazara al anterior
+
+Un ejemplo de una consulta de guardado en GraphiQL es: 
+```
+mutation{
+  saveProduct(
+      title:"jabon",
+      price:23,
+      thumbnail:"https://upload.wikimedia.org/wikipedia/commons/b/bf/Tualetsapo.jpg"
+  )
+  {
+    title
+    price
+    thumbnail
+  }
+}
+```
 ## Archivo .env
 El proyecto toma varios parametros desde el entorno de ejecucion que deberan ser definidos en un archivo .env de la siguiente forma
 ```

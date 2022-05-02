@@ -23,6 +23,9 @@ const passportConfig = require('./api/config/passport.js')
 const cpus = require("os").cpus().length;
 const User = require('./models/userModel')
 const {normalize} = require('normalizr')
+const productsApi = require('./api/containers/productsDto')
+
+
 
 const messageSchema = require('./models/messageSchema')
 
@@ -36,7 +39,8 @@ const session = require('express-session')
 const mongoSession = require('./api/config/mongoSession')
 const { indexOf } = require('./tests/testProducts');
 const argv = require('./api/config/argv')
-const productsApi = require('./api/containers/productsDto')
+const {graphqlHTTP} = require('express-graphql')
+const {schema,resolvers} = require('./api/config/graphql')
 const messagesApi = require('./api/containers/messagesDto')
 
 
@@ -56,7 +60,12 @@ app.use('/randomApi',randomRouter)
 app.set('view engine', 'ejs');
 app.set('views','./views')
 app.set('socketio',io)
+app.use('/graphql',graphqlHTTP({
+    schema:schema,
+    rootValue:resolvers,
+    graphiql:true,
 
+}))
 
 
 app.use(express.urlencoded({ extended: true }));

@@ -28,7 +28,6 @@ const putProductController = async (req,res) =>{
 }
 
 const postProductController = (req, res)=>{
-    console.log(req.body)
     newProduct = req.body
     if(newProduct.title === "" || newProduct.thumbnail === "" || !isNumeric(newProduct.price)){
         errorLogger.error('Error al añadir producto')
