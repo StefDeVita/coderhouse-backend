@@ -42,6 +42,7 @@ es decir, el get post put y delete de productos.
     price: (precio),
     thumbnail: (url al logo o foto del producto)
   }
+  ```
 
 ## Guardado de los datos
 
@@ -51,6 +52,7 @@ Los mensajes por otro lado son almacenados en una base de mongoDB cuya uri se de
 
 ## Archivo .env
 El proyecto toma varios parametros desde el entorno de ejecucion que deberan ser definidos en un archivo .env de la siguiente forma
+
 ```
 MONGO_URI = "Url a DB mongo"
 BCRYPT_ROUNDS = "Rondas de encriptado para la contraseña(numero entero)"
