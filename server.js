@@ -1,7 +1,12 @@
 require('dotenv').config()
-const express = require('express');
+const Koa = require('koa')
 
-const app = express()
+const app = new Koa()
+const koaBody = require('koa-body')
+const serve = require('koa-static')
+const render = require('koa-ejs');
+const path = require('path')
+app.use(koaBody())
 const {createTables} = require('./options/createTable.js');
 createTables();
 
@@ -16,8 +21,7 @@ const {newProductController,addCartController,newMessageController} = require('.
 const {homepageController,logoutController,getLoginController,postRegisterController,getRegisterController,postLoginController,validateEmail,getSignInErrorController,getLogoutController} = require('./api/controllers/authController')
 const {defaultPutController,defaultDeleteController,defaultPostController} = require('./api/controllers/defaultController')
 const {postProductController,getProductController,putProductController,deleteProductController} = require('./api/controllers/productController')
-const compression = require('compression')
-const passport = require('passport')
+const passport = require('koa-passport')
 const multer = require('multer')
 const passportConfig = require('./api/config/passport.js')
 const cpus = require("os").cpus().length;
@@ -26,40 +30,37 @@ const {normalize} = require('normalizr')
 
 const messageSchema = require('./models/messageSchema')
 
-const Messages = require('./models/messageModel');
-const testProducts = require('./tests/testProducts')
 
 const {randomRouter} =require('./routers/randomRouter')
-const {Router} = express;
-const cookieParser = require('cookie-parser')
-const session = require('express-session')
+const Router = require('koa-router')
+const cookieParser = require('koa-cookie')
+const session = require('koa-session');
 const mongoSession = require('./api/config/mongoSession')
-const { indexOf } = require('./tests/testProducts');
 const argv = require('./api/config/argv')
 const productsApi = require('./api/containers/productsDto')
 const messagesApi = require('./api/containers/messagesDto')
 
-
-
-
-app.use('/cart',cartRouter)
-app.use(cookieParser())
-app.use(session(mongoSession))
-app.use(compression())
+const router = new Router()
+app.keys = ['key']
+app.use(session(app))
+app.use(cookieParser.default())
+app.use(cartRouter.routes())
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static('views'));
-app.use(express.static(__dirname + './public/img'));
-app.use('/public/img',express.static('./public/img'));
-app.use('/api',apiRouter)
-app.use('/randomApi',randomRouter)
-app.set('view engine', 'ejs');
-app.set('views','./views')
-app.set('socketio',io)
+app.use(serve(__dirname + '/public/img'));
+app.use(apiRouter.routes())
+app.use(randomRouter.routes())
+render(app, {
+    root: path.join(__dirname, 'views'),
+    layout:false,
+    viewExt: 'html',
+    cache: false,
+    debug: true
+  });
 
 
 
-app.use(express.urlencoded({ extended: true }));
+
 const storage = multer.diskStorage({
     destination: (req,file,cb) =>{
         cb(null,'./public/img')
@@ -70,16 +71,28 @@ const storage = multer.diskStorage({
 })
 const upload = multer({storage:storage})
 
-app.post('/products',postProductController);
-app.put('/products/:id',putProductController);
-app.get('/products',getProductController);
-app.get('/goodbye',logoutController)
-app.get('/logout',getLogoutController);
-app.get('/buy',getBuyController)
-app.get('/',homepageController)
-app.get('/login',getLoginController)
-app.delete('/products/:id',deleteProductController);
-app.post('/finalizeBuy',postBuyController)
+
+router.get('/products',getProductController);
+router.post('/products',postProductController);
+router.put('/products/:id',putProductController);
+router.get('/goodbye',logoutController)
+router.get('/logout',getLogoutController);
+router.get('/buy',getBuyController)
+router.get('/',homepageController)
+router.get('/login',getLoginController)
+router.delete('/products/:id',deleteProductController);
+router.post('/finalizeBuy',postBuyController)
+router.post('/register',upload.single('avatar'),postRegisterController )
+
+router.get('/register',getRegisterController)
+
+router.post('/login',passport.authenticate('login',{failureRedirect:'/signinError'}),postLoginController)
+
+router.get('/signinError',getSignInErrorController)
+router.get('/info',(req,res)=>{
+    res.render('info',{argv:argv,cpus:cpus, process:process,__dirname:__dirname,bytes:req.socket.bytesWritten})
+    logger.info(`${req.route.path} ${req.method}`, 'info');
+})
 
 io.on('connection', (socket,req) => {
     console.log('Un cliente se ha conectado');
@@ -100,20 +113,9 @@ io.on('connection', (socket,req) => {
 });
 
 
-app.post('/register',upload.single('avatar'),postRegisterController )
 
-app.get('/register',getRegisterController)
+app.use(router.routes())
+.use(router.allowedMethods())
 
-app.post('/login',passport.authenticate('login',{failureRedirect:'/signinError'}),postLoginController)
-
-app.get('/signinError',getSignInErrorController)
-app.get('/info',(req,res)=>{
-    res.render('info',{argv:argv,cpus:cpus, process:process,__dirname:__dirname,bytes:req.socket.bytesWritten})
-    logger.info(`${req.route.path} ${req.method}`, 'info');
-})
-
-
-app.post('*', defaultPostController);  
-app.delete('*',defaultDeleteController);  
-app.put('*', defaultPutController); 
+  
 module.exports = {app,argv,httpServer}

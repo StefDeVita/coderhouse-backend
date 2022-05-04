@@ -1,9 +1,11 @@
 const express = require('express');
-const {Router} = express
+const Router = require('koa-router')
 const cartModel = require('../models/cartModel')
 const {MongoContainer} = require('../api/containers/mongoContainer')
 
-const cartRouter = new Router()
+const cartRouter = new Router({
+    prefix:'/cart'
+})
 cartRouter.use(express.json());
 cartRouter.use(express.urlencoded({ extended: true}));
 const carts = new MongoContainer(process.env.MONGO_URI,cartModel)

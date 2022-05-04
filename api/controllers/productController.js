@@ -7,47 +7,46 @@ function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-const getProductController = async (req,res) =>{
+const getProductController = async (ctx) =>{
     let savedProducts = await productsApi.getAll()
-    res.send({statusCode:200,payload:savedProducts});  
+    ctx.body= {statusCode:200,payload:savedProducts};
 }
-const putProductController = async (req,res) =>{
-    let id = req.params.id;
-    let product = req.body;
+const putProductController = async ctx =>{
+    let id = ctx.params.id;
+    let product = ctx.request.body;
     if(!isNumeric(product.price)){
-        res.send({"error":"Ingrese un precio o stock válido"})
+        ctx.body={"error":"Ingrese un precio o stock válido"}
         return;
     }
     product.price = Number(product.price);
     product.stock = Number(product.stock);
     let newProduct = await productsApi.update(id,product)
     if(!newProduct){
-        res.send({"error":"No se encuentra el producto"})
+        ctx.body={"error":"No se encuentra el producto"}
     }
-    res.send({statusCode:200,payload:newProduct});
+    ctx.body={statusCode:200,payload:newProduct};
 }
 
-const postProductController = (req, res)=>{
-    console.log(req.body)
-    newProduct = req.body
+const postProductController = ctx=>{
+    newProduct = ctx.request.body
     if(newProduct.title === "" || newProduct.thumbnail === "" || !isNumeric(newProduct.price)){
         errorLogger.error('Error al añadir producto')
         res.render('error');
         return
     }
-    productsApi.push(req.body);
-    res.redirect('/')
+    productsApi.push(ctx.request.body);
+    ctx.body = newProduct
     
-    logger.info(`${req.route.path} ${req.method}`, 'products');
+    logger.info(`${ctx.request.path} ${ctx.request.method}`, 'products');
 }
-const deleteProductController = (req, res)=>{
-    let id = req.params.id;
-    if(!(productsApi.get(id))){
-        res.send({"error":"No se encuentra el producto"})
+const deleteProductController = async ctx=>{
+    let id = ctx.params.id;
+    if(!(await productsApi.get(id))){
+        ctx.body={"error":"No se encuentra el producto"}
         return
     }
-    let erasedProduct =  productsApi.delete(id);
-    res.send({statusCode:200,erasedProduct});
+    let erasedProduct = await productsApi.delete(id);
+    ctx.body={statusCode:200,erasedProduct};
 }
 
 module.exports = {postProductController,getProductController,putProductController,deleteProductController}

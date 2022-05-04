@@ -1,8 +1,10 @@
 const express = require('express');
 const {fork} = require('child_process')
-const {Router} = express;
+const Router = require('koa-router')
 
-const randomRouter = Router()
+const randomRouter = Router({
+    prefix:'/randomApi'
+})
 
 randomRouter.use(express.json())
 randomRouter.use(express.urlencoded({ extended: true }))

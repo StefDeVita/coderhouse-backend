@@ -24,7 +24,7 @@ if(argv.mode === 'CLUSTER'){
     }
 }
 else{
-    const server = httpServer.listen(PORT,() => {
+    const server = app.listen(PORT,() => {
         console.log(`Servidor escuchando en el puerto ${server.address().port}   `)
     });
 }

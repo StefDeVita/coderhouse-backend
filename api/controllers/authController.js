@@ -4,50 +4,50 @@ const users = require('../daos/userDAO')
 const errorLogger = require('../config/errorLogger')
 const {sendBuyMailandMessage,sendRegisterMail} = require('./messagesController')
 
-const homepageController = (req,res)=>{
-    if(req.isAuthenticated()){
+const homepageController = async (ctx)=>{
+    if(!ctx.session.isNew){
         let port = ''
         if(!process.env.PORT){
             port = ':8080'
         }
-        res.render('form',{user:req.user,path: req.protocol + "://" + req.hostname + port});
+        await ctx.render('form',{user:ctx.user,path: ctx.protocol + "://" + ctx.hostname + port});
     }
     else{
-        res.render('form')
+        await ctx.render('form')
     }
-    logger.info(`${req.route.path} ${req.method}`, 'home');
+    logger.info(`${ctx.path} ${ctx.method}`, 'home');
 }
 
-const logoutController = (req,res)=>{
-    let name = req.session.name;
-    req.session.destroy(err => console.log(err));
-    res.render('goodbye',{name:name});
+const logoutController = ctx=>{
+    let name = ctx.session.name;
+    ctx.session.destroy(err => console.log(err));
+    ctx.render('goodbye',{name:name});
     logger.info(`${req.route.path} ${req.method}`, 'goodbye');
     
 }
 
-const getLoginController = (req,res)=>{
-    res.render('form');
+const getLoginController = async ctx=>{
+    await ctx.render('form');
     logger.info(`${req.route.path} ${req.method}`, 'login');
 }
 
 
-const postRegisterController = async (req, res,next) => {
-    logger.info(`${req.route.path} ${req.method}`, 'register');
-    let hash = bcrypt.hashSync(req.body.password,parseInt(process.env.BCRYPT_ROUNDS))
+const postRegisterController = async ctx => {
+    logger.info(`${ctx.request.path} ${ctx.request.method}`, 'register');
+    let hash = bcrypt.hashSync(ctx.request.body.password,parseInt(process.env.BCRYPT_ROUNDS))
     const newUser = {
-        email: req.body.email,
+        email: ctx.request.body.email,
         password: hash,
-        name:req.body.name,
-        adress: req.body.address,
-        telephone: req.body.telephone,
-        age: Number(req.body.age),
-        imgPath:'/public/img/' + req.body.email,
+        name:ctx.request.body.name,
+        adress: ctx.request.body.address,
+        telephone: ctx.request.body.telephone,
+        age: Number(ctx.request.body.age),
+        imgPath:'/public/img/' + ctx.request.body.email,
         cart: {products:[],timestamp: new Date()}
     }
-    const user = await users.getByEmail(req.body.email);
+    const user = await users.getByEmail(ctx.request.body.email);
     if(user){
-        res.render('signupError')
+        ctx.render('signupError')
         errorLogger.error('signuperror')
         return
     }
@@ -57,14 +57,14 @@ const postRegisterController = async (req, res,next) => {
     await sendRegisterMail(newUser);
 }
 
-const getRegisterController = (req,res)=>{
-    res.render('register')
-    logger.info(`${req.route.path} ${req.method}`, 'register');
+const getRegisterController = async ctx=>{
+    await ctx.render('register')
+    logger.info(`${ctx.request.path} ${ctx.request.method}`, 'register');
 }
 
-const postLoginController = (req,res)=>{
-    res.redirect('/')
-    logger.info(`${req.route.path} ${req.method}`, 'login');
+const postLoginController = ctx=>{
+    ctx.redirect('/')
+    logger.info(`${ctx.request.path} ${ctx.request.method}`, 'login');
 }
 const validateEmail = (inputText) =>{
     var mailFormat = /\S+@\S+\.\S+/;
@@ -77,12 +77,12 @@ const validateEmail = (inputText) =>{
         return false;
     }
 }
-const getSignInErrorController = (req,res)=>{
-    res.render('signinError')
+const getSignInErrorController = async ctx=>{
+    await ctx.render('signinError')
 }
-const getLogoutController = (req,res)=>{
-    res.redirect('/goodbye')
-    logger.info(`${req.route.path} ${req.method}`, 'logout');
+const getLogoutController = ctx=>{
+    ctx.redirect('/goodbye')
+    logger.info(`${ctx.request.path} ${ctx.request.method}`, 'logout');
 }
 
 module.exports = {homepageController,logoutController,getLoginController,postRegisterController,getRegisterController,postLoginController,validateEmail,validateEmail,getSignInErrorController,getLogoutController}
