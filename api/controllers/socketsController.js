@@ -1,3 +1,5 @@
+const logger = require('../config/logger').logger
+const errorLogger = require('../config/errorLogger').errorLogger
 const io = require('../config/socket').get()
 const productsApi = require('../containers/productsDto')
 const messagesApi = require('../containers/messagesDto')
