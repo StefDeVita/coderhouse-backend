@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const logger = require('../config/logger').logger
 const users = require('../daos/userDAO')
-const errorLogger = require('../config/errorLogger')
+const errorLogger = require('../config/errorLogger').errorLogger
 const {sendBuyMailandMessage,sendRegisterMail} = require('./messagesController')
 
 const homepageController = (req,res)=>{

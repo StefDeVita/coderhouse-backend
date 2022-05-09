@@ -1,5 +1,5 @@
 const logger = require('../config/logger').logger
-const errorLogger = require('../config/errorLogger').logger
+const errorLogger = require('../config/errorLogger').errorLogger
 const defaultPostController = (req, res)=>{
     logger.warn(`${req.path} ${req.method}`)
 
