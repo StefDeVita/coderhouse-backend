@@ -6,6 +6,7 @@ const errorLogger = require('../config/errorLogger').errorLogger
 const {sendBuyMailandMessage,sendRegisterMail} = require('./messagesController')
 
 const homepageController = (req,res)=>{
+
     if(req.isAuthenticated()){
         let port = ''
         if(!process.env.PORT){
@@ -43,7 +44,7 @@ const postRegisterController = async (req, res,next) => {
         adress: req.body.address,
         telephone: req.body.telephone,
         age: Number(req.body.age),
-        imgPath:path.join(__dirname , 'public','img' , req.body.email),
+        imgPath:path.join(process.cwd() , 'public','img' , req.body.email),
         cart: {products:[],timestamp: new Date()}
     }
     const user = await users.getByEmail(req.body.email);
@@ -86,5 +87,4 @@ const getLogoutController = (req,res)=>{
     res.redirect('/goodbye')
     logger.info(`${req.route.path} ${req.method}`, 'logout');
 }
-
 module.exports = {homepageController,logoutController,getLoginController,postRegisterController,getRegisterController,postLoginController,validateEmail,validateEmail,getSignInErrorController,getLogoutController}

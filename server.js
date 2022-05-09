@@ -4,7 +4,7 @@ const express = require('express');
 const app = express()
 const {createTables} = require('./options/createTable.js');
 createTables();
-
+const path = require('path')
 const httpServer = require('http').Server(app)
 const io = require('./api/config/socket.js').init(httpServer);
 const {MongoContainer} = require('./api/containers/mongoContainer')
@@ -62,7 +62,7 @@ app.set('socketio',io)
 app.use(express.urlencoded({ extended: true }));
 const storage = multer.diskStorage({
     destination: (req,file,cb) =>{
-        cb(null,'./public/img')
+        cb(null,path.join(__dirname,'public','img'))
     },
     filename: (req,file,cb) =>{
         cb(null,req.body.email + '.jpg')
