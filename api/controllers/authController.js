@@ -46,7 +46,8 @@ const postRegisterController = async (req, res,next) => {
         cart: {products:[],timestamp: new Date()}
     }
     const user = await users.getByEmail(req.body.email);
-    if(user){
+    if(user.length !== 0) {
+        console.log(user.length)
         res.render('signupError')
         errorLogger.error('signuperror')
         return
