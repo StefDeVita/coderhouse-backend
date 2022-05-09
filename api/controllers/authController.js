@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const logger = require('../config/logger').logger
 const users = require('../daos/userDAO')
+const path = require('path')
 const errorLogger = require('../config/errorLogger').errorLogger
 const {sendBuyMailandMessage,sendRegisterMail} = require('./messagesController')
 
@@ -42,7 +43,7 @@ const postRegisterController = async (req, res,next) => {
         adress: req.body.address,
         telephone: req.body.telephone,
         age: Number(req.body.age),
-        imgPath:__dirname + '/public/img/' + req.body.email,
+        imgPath:path.join(__dirname , 'public','img' , req.body.email),
         cart: {products:[],timestamp: new Date()}
     }
     const user = await users.getByEmail(req.body.email);
