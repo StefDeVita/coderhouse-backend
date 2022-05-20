@@ -2,63 +2,122 @@
 Proyecto para el curso de Desarrollo Backend de Coderhouse en Node.js
 
 ## Correr el proyecto
-  Primero se deben instalar todas las dependencias con el comando
+
+  Para poder inicializar el proyecto habra que instalar las dependencias de este con el comando
   ```
   npm install
   ```
-  Luego el proyecto se inicializa corriendo el siguiente script:
+  Por último el proyecto se inicializa corriendo el siguiente script:
   ```
   npm run start
   ```
-## Peticiones al server
+## Correr el proyecto en modo cluster y fork
 
-  Actualmente se pueden hacer las siguientes peticiones para productos
+  El proyecto se puede correr en modo cluster de pm2 usando el script
+  
   ```
-  GET '/api/products' -> devuelve todos los productos.
-  GET '/api/products/:id' -> devuelve un producto según su id.
-  POST '/api/products' -> recibe y agrega un producto, y lo devuelve con su id asignado.
-  PUT '/api/products/:id' -> recibe y actualiza un producto según su id.
-  DELETE '/api/products/:id' -> elimina un producto según su id.
-
+  npm run cluster
   ```
-
-  A su vez se pueden hacer las siguientes peticiones para los carritos
-  ```
-  POST: '/' - Crea un carrito y lo devuelve.
-  DELETE: '/:idCarrito' - Elimina un carrito.
-  GET: '/:idCarrito/products' - Me permite listar todos los productos guardados en el carrito
-  POST: '/:idCarrito/products/:id_prod' - Para incorporar productos al carrito indicando el ID del carrito y del producto 
-  DELETE: '/:idCarrito/products/:id_prod' - Eliminar un producto del carrito por su id de carrito y de producto
+  o en modo fork del mismo con el comando
 
   ```
-  En caso de ser exitosas las peticiones devolveran un objeto con un status 200 de éxito y el payload que corresponda (el producto o carrito indicado).  
+  npm run fork
+  ```
+
+  tambien se puede utilizar forever para monitoreo con el comando de
+
+  ```
+  npm run forever
+  ```
+
+  Por otro lado con nginx es posible correr la funcionalidad de randomApi/random en un cluster de 5 puertos con el archivo de configuracion que se encuentra en el repo y corriendo el proyecto en los puertos 8080 8082 8083 8084 y 8085 utilizando el argumento -p que recibe el server al iniciar. El resto de las peticiones se manejaran en el puerto 8080
+  
+  
+## Login y registro
+
+  El sitio tiene implementado un sistema de login y registro que se almacena en una base de datos en la nube. Al registrarse sin ningún error y luego logearse
+  en la página principal se mantendrá una sesión durante 10 minutos o hasta deslogearse con el botón correspondiente.
+## Numeros random
+
+  En la ruta /randomApi/random se generarán los números indicados por query con el argumento quantity o
+  10.000.000 en su defecto. Estos se mostrarán en formato clave valor siendo la clave el número y el valor la
+  cantidad de veces que se obtuvo
+## Información
+
+  En la ruta /info se podra ver la siguiente informacion:
+  
+  -Argumentos de entrada - Path de ejecución
+  
+  -Nombre de la plataforma (sistema operativo) - Process id
+  
+  -Versión de node.js - Carpeta del proyecto
+  
+  -Memoria total reservada (rss)
+## Muestra de objetos
+
+  Los objetos agregados se muestran en una tabla en la página principal que se actualiza en vivo sin necesidad de recargar la misma para todos los clientes.
+  Por otro lado los mensajes se muestran debajo de esta tabla de la misma forma. La página cuenta con dos formularios, uno para cada funcionalidad.
 ## Formato de objetos
-  Los productos aceptados cuentan con el siguiente formato:
+
+  Los objetos (productos) aceptados cuentan con el siguiente formato:
   
   ```
   {
     title: (nombre del producto),
     price: (precio),
-    thumbnail: (url al logo o foto del producto),
-    description: (descripcion del producto),
-    stock: (stock del producto),
-    code: (codigo del producto)
+    thumbnail: (url al logo o foto del producto)
   }
 
   ```
-  Ademas se le agregara un ID y un timestamp a cada producto asi como a cada carrito al crearse.
-
-  El formato de los carritos es
+  Por otro lado los mensajes aceptados cuentan con el siguiente formato
   ```
-  {
-    products: [Arreglo con los productos agregados],
-    _id: (id del carrito),
-    timestamp: (timestamp del carrito),
+  { 
+    author: {
+        id: 'mail del usuario', 
+        nombre: 'nombre del usuario', 
+        apellido: 'apellido del usuario', 
+        edad: 'edad del usuario', 
+        alias: 'alias del usuario',
+        avatar: 'url avatar (foto, logo) del usuario'
+    },
+    text: 'mensaje del usuario'
   }
+  Ademas se le añade un atributo date en author al momento de guardarse
 
   ```
-  Estos se crearan y se devolveran con el arreglo de productos vacio ademas de su id de carrito y timestamp correspondiente
+## Guardado de los datos
 
-  ## Almacenamiento de los objetos
+Los datos son guardados en dos bases de datos una de MariaDB y otra de SQLite3, para poder guardar de manera local los datos en la base de MariaDB se debe inicializar MySQL en XAMPP o similares y darle los permisos requeridos.
 
-  Se decidira en base a una variable de entorno llamada STORAGE_MODE el tipo de almacenamiento pudiendo elegir entre MONGO(mongodb),FIRE(firestore) y FILES(filesystem).Dependiendo de esta variable se crearan los contenedores correspondientes.
+Los mensajes por otro lado son almacenados en una base de mongoDB cuya uri se debe incluir en un archivo .env con el nombre MONGO_URI.
+
+## Archivo .env
+El proyecto toma varios parametros desde el entorno de ejecucion que deberan ser definidos en un archivo .env de la siguiente forma
+```
+MONGO_URI = "Url a DB mongo"
+BCRYPT_ROUNDS = "Rondas de encriptado para la contraseña(numero entero)"
+SECRET = "secreto para session"
+NODEMAILER_MAIL = "Mail para nodemailer"
+NODEMAILER_PASS = "Pass para Nodemailer"
+NODEMAILER_HOST = "Host de nodemailer"
+NODEMAILER_PORT = "Puerto para nodemailer"
+TWILIO_TOKEN = "Token de twilio"
+TWILIO_PASS = "Pass de twilio" 
+TWILIO_DESTINATION_NUMBER = "numero de whatsapp al que se enviara la confirmacion del pedido formato whatsapp:numero"
+STORAGE_MODE = "MONGO o bien SQL dependiendo del tipo de almacenamiento deseado para productos y mensajes"
+```
+## Gzip
+
+El proyecto se encuentra comprimido en gzip que segun las pruebas realizadas aproximadamente reduce un 10% la cantidad de bytes
+escritos por las requests.
+
+## Pruebas de performances
+Se realizaron ademas pruebas de performance con autocannon
+![autocannon](./tests/img/autocannon.png)
+
+Ademas tambien con devtools de node
+![devtools](./tests/img/devtools.png)
+
+Tambien se incluye el grafico de flama en el archivo html en la carpeta terminada en .0x
+  
+

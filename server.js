@@ -1,175 +1,119 @@
-
 require('dotenv').config()
-const {ProductsDao,CartsDao} = require('./daos/ContainerCreator')
 const express = require('express');
-const PORT = process.env.PORT || 8080;
-let admin = true;
+
+const app = express()
+const {createTables} = require('./options/createTable.js');
+createTables();
+const path = require('path')
+const httpServer = require('http').Server(app)
+const io = require('./api/config/socket.js').init(httpServer);
+const {MongoContainer} = require('./api/containers/mongoContainer')
+const {cartRouter,carts} = require('./routers/cartRouter')
+const {apiRouter} = require('./routers/apiRouter')
+const {logger,errorLogger} = require('./api/config/logger')
+const {getBuyController,postBuyController} = require('./api/controllers/buyController')
+const {newProductController,addCartController,newMessageController} = require('./api/controllers/socketsController')
+const {homepageController,logoutController,getLoginController,postRegisterController,getRegisterController,postLoginController,validateEmail,getSignInErrorController,getLogoutController} = require('./api/controllers/authController')
+const {defaultPutController,defaultDeleteController,defaultPostController} = require('./api/controllers/defaultController')
+const {postProductController,getProductController,putProductController,deleteProductController} = require('./api/controllers/productController')
+const compression = require('compression')
+const passport = require('passport')
+const multer = require('multer')
+const passportConfig = require('./api/config/passport.js')
+const cpus = require("os").cpus().length;
+const User = require('./models/userModel')
+const {normalize} = require('normalizr')
+
+const messageSchema = require('./models/messageSchema')
+
+const Messages = require('./models/messageModel');
+const testProducts = require('./tests/testProducts')
+
+const {randomRouter} =require('./routers/randomRouter')
 const {Router} = express;
-function isNumeric(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-}
-const app = express();
-const router = Router();
-const cartRouter = new Router()
-app.use(express.static('public'));
-app.use('/api',router);
-app.use('/cart',cartRouter);
+const cookieParser = require('cookie-parser')
+const session = require('express-session')
+const mongoSession = require('./api/config/mongoSession')
+const { indexOf } = require('./tests/testProducts');
+const argv = require('./api/config/argv')
+const productsApi = require('./api/containers/productsDto')
+const messagesApi = require('./api/containers/messagesDto')
 
-const products = ProductsDao;
-const carts = CartsDao;
-cartRouter.use(express.json());
-cartRouter.use(express.urlencoded({ extended: true}));
-router.use(express.json());
-router.use(express.urlencoded({ extended: true }));
 
-const server = app.listen(PORT,() => {
-    console.log(`Servidor escuchando en el puerto ${server.address().port}   `)
+
+
+app.use('/cart',cartRouter)
+app.use(cookieParser())
+app.use(session(mongoSession))
+app.use(compression())
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.static('views'));
+app.use(express.static(__dirname + './public/img'));
+app.use('/public/img',express.static('./public/img'));
+app.use('/api',apiRouter)
+app.use('/randomApi',randomRouter)
+app.set('view engine', 'ejs');
+app.set('views','./views')
+app.set('socketio',io)
+
+
+
+app.use(express.urlencoded({ extended: true }));
+const storage = multer.diskStorage({
+    destination: (req,file,cb) =>{
+        cb(null,path.join(__dirname,'public','img'))
+    },
+    filename: (req,file,cb) =>{
+        cb(null,req.body.email + '.jpg')
+    }
+})
+const upload = multer({storage:storage})
+
+app.post('/products',postProductController);
+app.put('/products/:id',putProductController);
+app.get('/products',getProductController);
+app.get('/goodbye',logoutController)
+app.get('/logout',getLogoutController);
+app.get('/buy',getBuyController)
+app.get('/',homepageController)
+app.get('/login',getLoginController)
+app.delete('/products/:id',deleteProductController);
+app.post('/finalizeBuy',postBuyController)
+
+io.on('connection', (socket,req) => {
+    console.log('Un cliente se ha conectado');
+    (async () =>{
+    
+    let products = await productsApi.getAll();
+    let normalizedMessages = await messagesApi.getAll()
+    if(normalizedMessages !== []){
+        normalizedMessages.id = 1
+        normalizedMessages = normalize(normalizedMessages,messageSchema)
+    }
+    socket.emit('products',products)
+    socket.emit('messages',normalizedMessages)
+    socket.on('product',newProductController) 
+    socket.on('new-product',addCartController)
+    socket.on('new-message',newMessageController);
+    })()
 });
 
-server.on("error",error => console.log(`Error en el servidor ${error}`));
 
-router.get('/products',async (req, res) => {
-    let savedProducts = await products.getAll()
-    res.send({statusCode:200,payload:savedProducts});
-    
-})
-router.get('/products/:id',async (req, res) => {
-    let id = req.params.id;
-    let product = await products.getById(id);
-    if(!product){
-        res.send({"error":"No se encuentra el producto"})
-        return;
-    }
-    res.send(product);
-})
-router.post('/products',async (req,res) =>{
-    if(!admin){
-        res.send({ error : -1, description: "ruta 'products' método 'post' no autorizado" });
-        return
-    }
-    let product = req.body;
-    if(!isNumeric(product.price) || !isNumeric(product.stock)){
-        res.send({"error":"Ingrese un precio o stock válido"})
-        return;
-    }
-    product.price = Number(product.price);
-    product.stock = Number(product.stock);
-    let newProduct = await products.save(product);
-    res.send({statusCode:200,payload:newProduct});
-})
-router.put('/products/:id',async (req, res) => {
-    if(!admin){
-        res.send({ error : -1, description: "ruta 'products' método 'put' no autorizado" });
-        return
-    }
-    let id = req.params.id;
-    let product = req.body;
-    if(!isNumeric(product.price) || !isNumeric(product.stock)){
-        res.send({"error":"Ingrese un  o stock válido"})
-        return;
-    }
-    product.price = Number(product.price);
-    product.stock = Number(product.stock);
-    let newProduct = await products.update(id,product)
-    if(!newProduct){
-        res.send({"error":"No se encuentra el producto"})
-    }
-    res.send({statusCode:200,payload:newProduct});
-})
-router.delete('/products/:id',async (req, res) => {
-    if(!admin){
-        res.send({ error : -1, description: "ruta 'products' método 'delete' no autorizado" });
-        return
-    }
-    let id = req.params.id;
-    if(!(await products.getById(id))){
-        res.send({"error":"No se encuentra el producto"})
-        return
-    }
-    let erasedProduct = await products.deleteById(id);
-    res.send({statusCode:200,erasedProduct});
-});
+app.post('/register',upload.single('avatar'),postRegisterController )
 
-cartRouter.post('/',async (req,res)=>{
-    const cart = {products:[]};
-    newCart = await carts.save(cart);
-    res.send({statusCode:200,newCart});
+app.get('/register',getRegisterController)
 
+app.post('/login',passport.authenticate('login',{failureRedirect:'/signinError'}),postLoginController)
+
+app.get('/signinError',getSignInErrorController)
+app.get('/info',(req,res)=>{
+    res.render('info',{argv:argv,cpus:cpus, process:process,__dirname:__dirname,bytes:req.socket.bytesWritten})
+    logger.info(`${req.route.path} ${req.method}`, 'info');
 })
-cartRouter.delete('/:id',async (req, res) => {
-    let id = req.params.id;
-    if(!(await carts.getById(id))){
-        res.send({"error":"No se encuentra el carrito"})
-    }
-    let erasedCart = await carts.deleteById(id);
-    res.send({statusCode:200,payload:erasedCart});
-})
-cartRouter.get('/:id/products',async (req, res)=>{
-    let id = req.params.id;
-    if(!carts.getById(id)){
-        res.send({"error":"No se encuentra el carrito"})
-    }
-    let products = (await carts.getById(id)).products;
-    res.send({statusCode:200,payload:products});
-})
-cartRouter.post('/:id/products/:productId',async (req, res) =>{
-    let id = req.params.id;
-    let productId = req.params.productId;
-    if(!carts.getById(id)){
-        res.send({"error":"No se encuentra el carrito"})
-    }
-    if(!products.getById(productId)){
-        res.send({"error":"No se encuentra el producto"})
-    }
-    let oldCart = await carts.getById(id);
-    let product = await products.getById(productId);
-    const newCart = {...oldCart};
-    
-    
-    if(!newCart.products){
-        newCart.products = []
-    }
-    await newCart.products.push(product);
-    await carts.update(id,newCart);
-    res.send({statusCode:200,payload:await carts.getById(id)});
-})
-cartRouter.delete('/:id/products/:productId',async (req, res)=>{
-    let id = req.params.id;
-    let productId = req.params.productId;
-    if(!carts.get(id)){
-        return res.send({"error":"No se encuentra el carrito"})
-        
-    }
-    if(!products.get(productId)){
-        return res.send({"error":"No se encuentra el producto"})
-       
-    }
-    let cart = await carts.get(id);
-    let newCart = {...cart};
-    if(!cart.products){
-        return res.send({"error":"El carrito se encuentra vacio"})
-    }
-    newCart.products.forEach(async (element,index,array) =>{
-        console.log(element._id,productId)
-        if(String(element._id) === String(productId)){
-            array.splice(index,1)
-            await carts.update(id,newCart)
-            return res.send({statusCode:200,payload:await carts.get(id)})
-        }
-        else{
-            return res.send({"error":"No se encontro el producto"})
-        }
-    })
-})
-app.get('*', function(req, res) {
-    res.send({ error : -2, descripcion: `ruta ${req.path} método 'get' no implementada`})
-  });
-app.post('*', function(req, res) {
-    res.send({ error : -2, descripcion: `ruta ${req.path} método 'post' no implementada`})
-  });  
-app.delete('*', function(req, res) {
-    res.send({ error : -2, descripcion: `ruta ${req.path} método 'delete' no implementada`})
-  });  
-app.put('*', function(req, res) {
-    res.send({ error : -2, descripcion: `ruta ${req.path} método 'put' no implementada`})
-  });
+
+
+app.post('*', defaultPostController);  
+app.delete('*',defaultDeleteController);  
+app.put('*', defaultPutController); 
+module.exports = {app,argv,httpServer}

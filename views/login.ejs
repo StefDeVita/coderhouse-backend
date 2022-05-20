@@ -1,0 +1,33 @@
+<% if (typeof user!=='undefined') { %>
+    <form action="/logout">
+        <div class="alert alert-primary">
+            Bienvenido <%= user.email %> !
+            <input type="submit" value="Logout" class="btn btn-primary">
+        </div>
+        <div class="alert alert-primary"> 
+            <p>Nombre: <%=user.name%> </p>
+            <p>Telefono: <%=user.telephone%> </p>
+            <p>Edad: <%=user.age%> </p>
+            <div class = container style="width:50%">
+                <label for="avatar">Avatar:</label>
+                <img src="<%=path + user.imgPath + '.jpg'%>" class="img-thumbnail img-fluid" alt=""%> " id="avatar" alt="avatar">
+            </div>
+        </div>
+    </form>
+
+<% }else{ %>
+<form action="/login" method="post" role="form" class="form">
+    <div class="form-group">
+        <label for="email">Ingrese aquí su email: </label>
+        <input id="email" name="email" placeholder="Email" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="password">Ingrese aquí su contraseña: </label>
+        <input type="password" id="password" name="password" placeholder="Password" class="form-control">
+    </div>
+    <div class="form-group">
+        
+        <input id="usernameInput" class="btn btn-success my-3" type="submit" value="Login">
+    </div>
+</form>
+<% } %>

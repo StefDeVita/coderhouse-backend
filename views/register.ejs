@@ -1,0 +1,75 @@
+<%- include('./header')-%>
+
+<form class="form-horizontal" action='/register' method="POST" enctype="multipart/form-data">
+    <fieldset>
+      <div id="legend">
+        <legend class="">Register</legend>
+      </div>
+
+   
+      <div class="control-group">
+        <!-- E-mail -->
+        <label class="control-label" for="email">E-mail</label>
+        <div class="controls">
+          <input type="text" id="email" name="email" placeholder="" class="input-xlarge">
+          <p class="help-block">Coloque aqui su email</p>
+        </div>
+      </div>
+   
+      <div class="control-group">
+        <!-- Password-->
+        <label class="control-label" for="password">Password</label>
+        <div class="controls">
+          <input type="password" id="password" name="password" placeholder="" class="input-xlarge">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <!-- Password-->
+        <label class="control-label" for="name">Nombre</label>
+        <div class="controls">
+          <input type="text" id="name" name="name" placeholder="" class="input-xlarge">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <!-- Password-->
+        <label class="control-label" for="address">Direccion</label>
+        <div class="controls">
+          <input type="text" id="adress" name="adress" placeholder="" class="input-xlarge">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <!-- Password-->
+        <label class="control-label" for="age">Edad</label>
+        <div class="controls">
+          <input type="text" id="age" name="age" placeholder="" class="input-xlarge">
+        </div>
+      </div>
+      <div class="control-group">
+        <!-- Password-->
+        <label class="control-label" for="password">Telefono</label>
+        <div class="controls">
+          <input type="text" id="telephone" name="telephone" placeholder="" class="input-xlarge">
+        </div>
+      </div>
+      <div class="control-group">
+        <!-- Password-->
+        <label class="control-label" for="password">Avatar</label>
+        <div class="controls">
+          <input type="file" id="avatar" name="avatar" placeholder="" class="input-xlarge">
+        </div>
+      </div>
+      
+   
+      
+   
+      <div class="control-group">
+        <!-- Button -->
+        <div class="controls">
+          <button class="btn btn-success">Register</button>
+        </div>
+      </div>
+    </fieldset>
+  </form>

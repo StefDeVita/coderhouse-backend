@@ -1,0 +1,23 @@
+.message {
+    color: green;
+    font-style: italic;
+}
+
+.date {
+    color: brown;
+}
+
+.author {
+    color: blue;
+    font-weight: bold;
+}
+.table{
+    display:table;
+}
+.td{
+    display: table-cell;
+    margin: 20%;
+}
+.tr{
+    display: table-row;
+}

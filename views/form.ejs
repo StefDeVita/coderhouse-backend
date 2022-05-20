@@ -1,0 +1,34 @@
+<%- include('./header')-%>
+
+<body>
+    <div class="container mt-3">
+        <a href="/register"> Registrarse</a>
+        <h3>Login de Usuario</h3>
+        <br>
+        <a href="/buy">Menú de compra</a>
+        
+        <%- include('./login')-%>
+    </div>
+    <div class="container mt-3">
+        <h1 class="header mt-3">Ingrese Datos</h1>
+        <form id="form" onsubmit="return addProduct(this)">
+            <div class="form-group">
+                <label for="title"><b>Nombre</b></label>
+                <input class="form-control" type="text" id="title" name="title">
+            </div>
+            <div class="form-group">
+                <label for="price"><b>Precio</b></label>
+                <input class="form-control" type="text" id="price" name="price">
+            </div>
+            <div class="form-group">
+                <label for="image"><b>Imagen</b></label>
+                <input class="form-control" type="text" id="image" name="thumbnail">
+            </div>
+            <input value="Enviar" id="send" class="btn btn-primary mt-3 mb-5" type="submit"></input>
+        </form>
+        <%- include('./products')-%>
+        <%- include('./messageCenter')-%>
+    </div>
+</body>
+
+</html>
