@@ -20,9 +20,6 @@ const UserSchema = new mongoose.Schema({
     telephone: {
         type: String
     },
-    imgPath: {
-        type: String
-    },
     cart:{
         type: cart
     }
