@@ -17,9 +17,9 @@
             <tr>
                 <td><%=product.title%></td>
                 <td><%=product.price%></td>
-                <td><%=product.price * product.cantidad || product.price%></td>
+                <td><%=product.price * product.amount || product.price%></td>
                 <td><img class="img-responsive" src="<%=product.thumbnail%>" alt="<%=product.title%>"></td>
-                <td><%=product.cantidad||1%></td>
+                <td><%=product.amount||1%></td>
             </tr>
         <%});  %> 
     </table>

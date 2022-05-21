@@ -12,6 +12,7 @@ const schema = new mongoose.Schema(
       description: String,
       stock: Number,
       code: String,
+      amount: Number
     }],
     timestamp: { type: Date, default: Date.now() },
     total: Number

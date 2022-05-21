@@ -1,10 +1,13 @@
 const {sendBuyMailandMessage,sendRegisterMail} = require('./messagesController')
 const users = require('../daos/userDAO')
+const io = require('../config/socket').get()
+
 
 const getBuyController = async (req,res)=>{
     if(req.isAuthenticated()){
         let user = await users.getById(req.user)
         res.render('buy',{user:user})
+
     }
     else{
         res.render('loginError');

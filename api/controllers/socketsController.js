@@ -37,18 +37,23 @@ const newProductController = data =>{
 
 const addCartController = async data =>{ 
     let userid = data.user;
+    let flag = false;
     const user = await users.getById(userid)
     let product = await productsApi.get(data.product)
-    if(user.cart.products.indexOf(product[0])!= -1){
-        product[0].quantity++;
-    }
-    else{
-        product[0].quantity = 1
-        user.cart.products.push(product[0])
+    user.cart.products.forEach((cartProduct,index) => {
+        if(String(cartProduct._id) == String(product._id)){
+            user.cart.products[index].amount++;
+            flag= true
+
+        }
+    });
+    if(!flag){
+        product.amount = 1
+        user.cart.products.push(product)
     }
     user.cart.total = 0;
     user.cart.products.forEach(product => {
-        user.cart.total += product.price
+        user.cart.total += product.price * product.amount
     });
     await users.update(userid,user);
     io.sockets.emit('add-cart',user.cart)
